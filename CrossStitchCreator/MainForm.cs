@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace CrossStitchCreator
+namespace $safeprojectname$
 {
 
     public partial class MainForm : Form
@@ -23,6 +23,11 @@ namespace CrossStitchCreator
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             aboutBox.ShowDialog();
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }

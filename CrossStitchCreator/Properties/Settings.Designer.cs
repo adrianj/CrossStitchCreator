@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace CrossStitchCreator.Properties
+namespace $safeprojectname$.Properties
 {
 
 
