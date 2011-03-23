@@ -37,6 +37,9 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AdriansLib">
+      <HintPath>..\..\AdriansLib\AdriansLib\bin\Debug\AdriansLib.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -55,9 +58,20 @@
     <Compile Include="AboutBox.Designer.cs">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
-    <Compile Include="MainForm.cs" />
+    <Compile Include="CrossStitchSettings.cs" />
+    <Compile Include="ImagingTools.cs" />
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PatternCreator.cs" />
+    <Compile Include="PatternEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PatternEditor.Designer.cs">
+      <DependentUpon>PatternEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -67,6 +81,9 @@
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="PatternEditor.resx">
+      <DependentUpon>PatternEditor.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -75,6 +92,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -85,6 +103,72 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\black.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\bslash.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\bsquare2.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\circle.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cross.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\diamond.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\fslash.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\horz.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\plus.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\square2.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\star.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\vert.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\wbslash.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\wcircle.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\wcross.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\wdiamond.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\wfslash.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\white.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\whorz.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\wplus.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\wstar.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\wvert.bmp" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
