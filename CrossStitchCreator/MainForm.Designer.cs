@@ -37,7 +37,13 @@
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveOutputImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.savePatternImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveProjectAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveOutputImageAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.savePatternImageAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -55,9 +61,9 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.zoomablePictureBox1 = new AdriansLib.ZoomablePictureBox();
-            this.pictureBoxOutput = new System.Windows.Forms.PictureBox();
             this.editButton = new System.Windows.Forms.Button();
+            this.zoomablePictureBox1 = new System.Windows.Forms.PictureBox();
+            this.pictureBoxOutput = new System.Windows.Forms.PictureBox();
             this.menuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxOriginal)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxNew)).BeginInit();
@@ -67,6 +73,7 @@
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.zoomablePictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxOutput)).BeginInit();
             this.SuspendLayout();
             // 
@@ -120,16 +127,61 @@
             // 
             // saveToolStripMenuItem
             // 
+            this.saveToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.saveProjectToolStripMenuItem,
+            this.saveOutputImageToolStripMenuItem,
+            this.savePatternImageToolStripMenuItem});
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
             this.saveToolStripMenuItem.Size = new System.Drawing.Size(200, 22);
-            this.saveToolStripMenuItem.Text = "Save Project...";
+            this.saveToolStripMenuItem.Text = "Save...";
+            // 
+            // saveProjectToolStripMenuItem
+            // 
+            this.saveProjectToolStripMenuItem.Name = "saveProjectToolStripMenuItem";
+            this.saveProjectToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.saveProjectToolStripMenuItem.Text = "Save Project...";
+            // 
+            // saveOutputImageToolStripMenuItem
+            // 
+            this.saveOutputImageToolStripMenuItem.Name = "saveOutputImageToolStripMenuItem";
+            this.saveOutputImageToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.saveOutputImageToolStripMenuItem.Text = "Save Output Image...";
+            this.saveOutputImageToolStripMenuItem.Click += new System.EventHandler(this.saveOutputImage);
+            // 
+            // savePatternImageToolStripMenuItem
+            // 
+            this.savePatternImageToolStripMenuItem.Name = "savePatternImageToolStripMenuItem";
+            this.savePatternImageToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.savePatternImageToolStripMenuItem.Text = "Save Pattern Image...";
             // 
             // saveAsToolStripMenuItem
             // 
+            this.saveAsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.saveProjectAsToolStripMenuItem,
+            this.saveOutputImageAsToolStripMenuItem,
+            this.savePatternImageAsToolStripMenuItem});
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
             this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(200, 22);
-            this.saveAsToolStripMenuItem.Text = "Save Project As...";
+            this.saveAsToolStripMenuItem.Text = "Save As...";
+            // 
+            // saveProjectAsToolStripMenuItem
+            // 
+            this.saveProjectAsToolStripMenuItem.Name = "saveProjectAsToolStripMenuItem";
+            this.saveProjectAsToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
+            this.saveProjectAsToolStripMenuItem.Text = "Save Project As...";
+            // 
+            // saveOutputImageAsToolStripMenuItem
+            // 
+            this.saveOutputImageAsToolStripMenuItem.Name = "saveOutputImageAsToolStripMenuItem";
+            this.saveOutputImageAsToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
+            this.saveOutputImageAsToolStripMenuItem.Text = "Save Output Image As...";
+            this.saveOutputImageAsToolStripMenuItem.Click += new System.EventHandler(this.saveOutputImageAs);
+            // 
+            // savePatternImageAsToolStripMenuItem
+            // 
+            this.savePatternImageAsToolStripMenuItem.Name = "savePatternImageAsToolStripMenuItem";
+            this.savePatternImageAsToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
+            this.savePatternImageAsToolStripMenuItem.Text = "Save Pattern Image As...";
             // 
             // exitToolStripMenuItem
             // 
@@ -339,24 +391,6 @@
             this.tabPage2.UseVisualStyleBackColor = true;
             this.tabPage2.Enter += new System.EventHandler(this.tabPage2_Enter);
             // 
-            // zoomablePictureBox1
-            // 
-            this.zoomablePictureBox1.Border = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.zoomablePictureBox1.Image = null;
-            this.zoomablePictureBox1.Location = new System.Drawing.Point(646, 0);
-            this.zoomablePictureBox1.Name = "zoomablePictureBox1";
-            this.zoomablePictureBox1.Picture = "";
-            this.zoomablePictureBox1.Size = new System.Drawing.Size(640, 480);
-            this.zoomablePictureBox1.TabIndex = 5;
-            // 
-            // pictureBoxOutput
-            // 
-            this.pictureBoxOutput.Location = new System.Drawing.Point(0, 0);
-            this.pictureBoxOutput.Name = "pictureBoxOutput";
-            this.pictureBoxOutput.Size = new System.Drawing.Size(640, 480);
-            this.pictureBoxOutput.TabIndex = 4;
-            this.pictureBoxOutput.TabStop = false;
-            // 
             // editButton
             // 
             this.editButton.Location = new System.Drawing.Point(8, 486);
@@ -366,6 +400,22 @@
             this.editButton.Text = "Edit / Update Patterns";
             this.editButton.UseVisualStyleBackColor = true;
             this.editButton.Click += new System.EventHandler(this.editButton_Click);
+            // 
+            // zoomablePictureBox1
+            // 
+            this.zoomablePictureBox1.Location = new System.Drawing.Point(646, 0);
+            this.zoomablePictureBox1.Name = "zoomablePictureBox1";
+            this.zoomablePictureBox1.Size = new System.Drawing.Size(640, 480);
+            this.zoomablePictureBox1.TabIndex = 5;
+            this.zoomablePictureBox1.TabStop = false;
+            // 
+            // pictureBoxOutput
+            // 
+            this.pictureBoxOutput.Location = new System.Drawing.Point(0, 0);
+            this.pictureBoxOutput.Name = "pictureBoxOutput";
+            this.pictureBoxOutput.Size = new System.Drawing.Size(640, 480);
+            this.pictureBoxOutput.TabIndex = 4;
+            this.pictureBoxOutput.TabStop = false;
             // 
             // MainForm
             // 
@@ -388,6 +438,7 @@
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.zoomablePictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxOutput)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -423,8 +474,15 @@
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.PictureBox pictureBoxOutput;
-        private AdriansLib.ZoomablePictureBox zoomablePictureBox1;
+        //private AdriansLib.ZoomablePictureBox zoomablePictureBox1;
+        private System.Windows.Forms.PictureBox zoomablePictureBox1;
         private System.Windows.Forms.Button editButton;
+        private System.Windows.Forms.ToolStripMenuItem saveProjectToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveOutputImageToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem savePatternImageToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveProjectAsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveOutputImageAsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem savePatternImageAsToolStripMenuItem;
     }
 }
 

@@ -67,7 +67,19 @@ namespace CrossStitchCreator
             try
             {
                 mInputImage = Image.FromFile(mSettings.InputImagePath);
+                Console.WriteLine("Input Size: " + mInputImage.Size);
+                if (mInputImage.Height > 1000 || mInputImage.Width > 1000)
+                {
+                    // too big. resize to be smaller.
+                    float maxDim = Math.Max(mInputImage.Width, mInputImage.Height);
+                    float scale = maxDim / 1000;
+                    Size newSize = new Size((int)((float)mInputImage.Width / scale),(int)((float) mInputImage.Height / scale));
+                    ImagingTools tool = new ImagingTools(mInputImage);
+                    tool.ResizeImage(newSize,true,InterpolationMode.Default);
+                    mInputImage = tool.OutputImage;
+                }
                 mSettings.InputImageSize = mInputImage.Size;
+                Console.WriteLine("Input Size: " + mInputImage.Size);
                 mOutputImage = mInputImage;
             }
             catch (ArgumentException e)
@@ -188,7 +200,8 @@ namespace CrossStitchCreator
             if (mOutputImage != null)
             {
                 ImagingTools tool = new ImagingTools(mOutputImage);
-                tool.SortPaletteByFrequency();
+                tool.UpdatePalette();
+                //tool.SortPaletteByFrequency();
                 patternEditor.Palette = tool.OutputImagePalette;
                 patternEditor.Show();
                 RedrawPattern();
@@ -207,7 +220,8 @@ namespace CrossStitchCreator
             if (mOutputImage != null)
             {
                 ImagingTools tool = new ImagingTools(mOutputImage);
-                tool.SortPaletteByFrequency();
+                tool.UpdatePalette();
+                //tool.SortPaletteByFrequency();
                 patternEditor.Palette = tool.OutputImagePalette;
                 patternEditor.Show();
                 RedrawPattern();
@@ -224,5 +238,18 @@ namespace CrossStitchCreator
             pictureBoxOutput.Image = pictureBoxNew.Image;
         }
         #endregion
+
+        private void saveOutputImage(object sender, EventArgs e)
+        {
+            if (mSettings.OutputImagePath == null)
+            {
+                saveOutputImageAs(sender, e);
+            }
+        }
+
+        private void saveOutputImageAs(object sender, EventArgs e)
+        {
+            saveFileDialog.ShowDialog();
+        }
     }
 }

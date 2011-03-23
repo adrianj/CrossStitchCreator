@@ -15,16 +15,16 @@ namespace CrossStitchCreator
         private Bitmap mOutput;
         public Bitmap OutputImage { get {  return mOutput; } }
         private Dictionary<Color, int> mPalette = new Dictionary<Color, int>();
-        public Dictionary<Color, int> OutputImagePalette { get { updatePalette(); return mPalette; } }
+        public Dictionary<Color, int> OutputImagePalette { get { UpdatePalette(); return mPalette; } }
 
         public ImagingTools(Image inputImage)
         {
             InputImage = (Bitmap)inputImage;
             mOutput = InputImage;
-            updatePalette();
+            //updatePalette();
         }
 
-        private void updatePalette()
+        public void UpdatePalette()
         {
             mPalette = new Dictionary<Color, int>();
             for (int x = 0; x < mOutput.Width; x++)
@@ -56,7 +56,7 @@ namespace CrossStitchCreator
             if (!mPalette.ContainsKey(colorToRemove)) return;
             mPalette.Remove(colorToRemove);
             ReplaceColour(colorToRemove, findSimilarColour(colorToRemove), true);
-            updatePalette();
+            UpdatePalette();
         }
 
         private Color findSimilarColour(Color colorToMatch)
@@ -157,7 +157,7 @@ namespace CrossStitchCreator
             if (chainProcess) orig = mOutput;
             Bitmap b = new Bitmap(orig.Width, orig.Height, PixelFormat.Format16bppRgb555);
 
-            updatePalette();
+            UpdatePalette();
             Console.WriteLine("ReduceColourDepth: initial nColours = " + mPalette.Count);
 
             for (int x = 0; x < b.Width; x++)
@@ -168,22 +168,22 @@ namespace CrossStitchCreator
                     b.SetPixel(x, y, newC);
                 }
             mOutput = b;
-            updatePalette();
+            UpdatePalette();
             int nColours = mPalette.Count;
             Console.WriteLine("ReduceColourDepth: colours after simple reduction = " + nColours);
 
             int toRemove = nColours - maxColours;
             if (toRemove > 0)
             {
-                AdriansLib.ProgressBarForm prog = new AdriansLib.ProgressBarForm("Reducing Colour Depth...",toRemove);
-                prog.Show();
+                //AdriansLib.ProgressBarForm prog = new AdriansLib.ProgressBarForm("Reducing Colour Depth...",toRemove);
+                //prog.Show();
 
                 for (int i = 0; i < toRemove; i++)
                 {
                     removeFromPalette(findLeastCommonColour());
-                    prog.Increment(1);
+                    //prog.Increment(1);
                 }
-                prog.Close();
+                //prog.Close();
             }
 
 
