@@ -63,17 +63,18 @@ namespace CrossStitchCreator
 
         private void DoRatioFixing(bool keepWidth)
         {
-            if (FixSizeRatio)
+            if (FixSizeRatio && mOutputSize.Width > 0 && mOutputSize.Height > 0
+                && InputImageSize.Width > 0 && InputImageSize.Height > 0)
             {
                 float ratio = (float)InputImageSize.Width / (float)InputImageSize.Height;
                 Console.WriteLine("Fix: " + ratio);
                 if (keepWidth)
                 {
-                    mOutputSize.Height = (int)(mOutputSize.Width / ratio);
+                    mOutputSize.Height = (int)((float)mOutputSize.Width / ratio);
                 }
                 else
                 {
-                    mOutputSize.Width = (int)(mOutputSize.Height * ratio);
+                    mOutputSize.Width = (int)((float)mOutputSize.Height * ratio);
                 }
             }
         }

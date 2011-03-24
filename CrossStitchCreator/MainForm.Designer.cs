@@ -48,7 +48,7 @@
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pictureBoxOriginal = new System.Windows.Forms.PictureBox();
-            this.pictureBoxNew = new System.Windows.Forms.PictureBox();
+            this.pictureBoxResized = new System.Windows.Forms.PictureBox();
             this.interpCombo = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.widthUpDown = new System.Windows.Forms.NumericUpDown();
@@ -56,25 +56,32 @@
             this.label3 = new System.Windows.Forms.Label();
             this.heightUpDown = new System.Windows.Forms.NumericUpDown();
             this.fixRatioCheck = new System.Windows.Forms.CheckBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.maxColoursUpDown = new System.Windows.Forms.NumericUpDown();
-            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.pictureBoxResized2 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.updateButton = new System.Windows.Forms.Button();
             this.editButton = new System.Windows.Forms.Button();
-            this.zoomablePictureBox1 = new System.Windows.Forms.PictureBox();
-            this.pictureBoxOutput = new System.Windows.Forms.PictureBox();
+            this.zoomablePictureBox1 = new AdriansLib.ZoomablePictureBox();
+            this.pictureBoxRecoloured2 = new System.Windows.Forms.PictureBox();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.showPaletteButton = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
+            this.maxColoursUpDown = new System.Windows.Forms.NumericUpDown();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.pictureBoxRecoloured = new System.Windows.Forms.PictureBox();
             this.menuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxOriginal)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxNew)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxResized)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.widthUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.heightUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.maxColoursUpDown)).BeginInit();
-            this.tabControl1.SuspendLayout();
+            this.pictureBoxResized2.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.zoomablePictureBox1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxOutput)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxRecoloured2)).BeginInit();
+            this.tabPage3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.maxColoursUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxRecoloured)).BeginInit();
             this.SuspendLayout();
             // 
             // openFileDialog
@@ -207,19 +214,22 @@
             // 
             // pictureBoxOriginal
             // 
+            this.pictureBoxOriginal.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.pictureBoxOriginal.Location = new System.Drawing.Point(0, 0);
             this.pictureBoxOriginal.Name = "pictureBoxOriginal";
             this.pictureBoxOriginal.Size = new System.Drawing.Size(640, 480);
             this.pictureBoxOriginal.TabIndex = 3;
             this.pictureBoxOriginal.TabStop = false;
             // 
-            // pictureBoxNew
+            // pictureBoxResized
             // 
-            this.pictureBoxNew.Location = new System.Drawing.Point(647, 0);
-            this.pictureBoxNew.Name = "pictureBoxNew";
-            this.pictureBoxNew.Size = new System.Drawing.Size(640, 480);
-            this.pictureBoxNew.TabIndex = 4;
-            this.pictureBoxNew.TabStop = false;
+            this.pictureBoxResized.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBoxResized.Location = new System.Drawing.Point(648, 0);
+            this.pictureBoxResized.Name = "pictureBoxResized";
+            this.pictureBoxResized.Size = new System.Drawing.Size(640, 480);
+            this.pictureBoxResized.TabIndex = 4;
+            this.pictureBoxResized.TabStop = false;
+            this.pictureBoxResized.MouseClick += new System.Windows.Forms.MouseEventHandler(this.pictureBoxNew_MouseClick);
             // 
             // interpCombo
             // 
@@ -306,6 +316,8 @@
             // fixRatioCheck
             // 
             this.fixRatioCheck.AutoSize = true;
+            this.fixRatioCheck.Checked = true;
+            this.fixRatioCheck.CheckState = System.Windows.Forms.CheckState.Checked;
             this.fixRatioCheck.Location = new System.Drawing.Point(540, 491);
             this.fixRatioCheck.Name = "fixRatioCheck";
             this.fixRatioCheck.Size = new System.Drawing.Size(67, 17);
@@ -314,57 +326,24 @@
             this.fixRatioCheck.UseVisualStyleBackColor = true;
             this.fixRatioCheck.CheckedChanged += new System.EventHandler(this.modifyOutputSize);
             // 
-            // label4
+            // pictureBoxResized2
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(613, 493);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(65, 13);
-            this.label4.TabIndex = 13;
-            this.label4.Text = "Max Colours";
-            // 
-            // maxColoursUpDown
-            // 
-            this.maxColoursUpDown.Location = new System.Drawing.Point(689, 490);
-            this.maxColoursUpDown.Maximum = new decimal(new int[] {
-            0,
-            1,
-            0,
-            0});
-            this.maxColoursUpDown.Minimum = new decimal(new int[] {
-            2,
-            0,
-            0,
-            0});
-            this.maxColoursUpDown.Name = "maxColoursUpDown";
-            this.maxColoursUpDown.Size = new System.Drawing.Size(62, 20);
-            this.maxColoursUpDown.TabIndex = 12;
-            this.maxColoursUpDown.Value = new decimal(new int[] {
-            500,
-            0,
-            0,
-            0});
-            this.maxColoursUpDown.ValueChanged += new System.EventHandler(this.modifyColours);
-            // 
-            // tabControl1
-            // 
-            this.tabControl1.Controls.Add(this.tabPage1);
-            this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Location = new System.Drawing.Point(0, 27);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1301, 541);
-            this.tabControl1.TabIndex = 14;
+            this.pictureBoxResized2.Controls.Add(this.tabPage1);
+            this.pictureBoxResized2.Controls.Add(this.tabPage3);
+            this.pictureBoxResized2.Controls.Add(this.tabPage2);
+            this.pictureBoxResized2.Location = new System.Drawing.Point(0, 27);
+            this.pictureBoxResized2.Name = "pictureBoxResized2";
+            this.pictureBoxResized2.SelectedIndex = 0;
+            this.pictureBoxResized2.Size = new System.Drawing.Size(1301, 541);
+            this.pictureBoxResized2.TabIndex = 14;
             // 
             // tabPage1
             // 
             this.tabPage1.Controls.Add(this.pictureBoxOriginal);
-            this.tabPage1.Controls.Add(this.label4);
             this.tabPage1.Controls.Add(this.label3);
             this.tabPage1.Controls.Add(this.widthUpDown);
-            this.tabPage1.Controls.Add(this.pictureBoxNew);
+            this.tabPage1.Controls.Add(this.pictureBoxResized);
             this.tabPage1.Controls.Add(this.label1);
-            this.tabPage1.Controls.Add(this.maxColoursUpDown);
             this.tabPage1.Controls.Add(this.heightUpDown);
             this.tabPage1.Controls.Add(this.fixRatioCheck);
             this.tabPage1.Controls.Add(this.label2);
@@ -379,9 +358,10 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.updateButton);
             this.tabPage2.Controls.Add(this.editButton);
             this.tabPage2.Controls.Add(this.zoomablePictureBox1);
-            this.tabPage2.Controls.Add(this.pictureBoxOutput);
+            this.tabPage2.Controls.Add(this.pictureBoxRecoloured2);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
@@ -391,38 +371,125 @@
             this.tabPage2.UseVisualStyleBackColor = true;
             this.tabPage2.Enter += new System.EventHandler(this.tabPage2_Enter);
             // 
+            // updateButton
+            // 
+            this.updateButton.Location = new System.Drawing.Point(144, 486);
+            this.updateButton.Name = "updateButton";
+            this.updateButton.Size = new System.Drawing.Size(130, 23);
+            this.updateButton.TabIndex = 7;
+            this.updateButton.Text = "Update Pattern";
+            this.updateButton.UseVisualStyleBackColor = true;
+            this.updateButton.Click += new System.EventHandler(this.updateButton_Click);
+            // 
             // editButton
             // 
             this.editButton.Location = new System.Drawing.Point(8, 486);
             this.editButton.Name = "editButton";
             this.editButton.Size = new System.Drawing.Size(130, 23);
             this.editButton.TabIndex = 6;
-            this.editButton.Text = "Edit / Update Patterns";
+            this.editButton.Text = "Show Pattern Editor";
             this.editButton.UseVisualStyleBackColor = true;
             this.editButton.Click += new System.EventHandler(this.editButton_Click);
             // 
             // zoomablePictureBox1
             // 
-            this.zoomablePictureBox1.Location = new System.Drawing.Point(646, 0);
+            this.zoomablePictureBox1.Border = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.zoomablePictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.zoomablePictureBox1.Image = null;
+            this.zoomablePictureBox1.Location = new System.Drawing.Point(648, 0);
             this.zoomablePictureBox1.Name = "zoomablePictureBox1";
+            this.zoomablePictureBox1.Picture = "";
             this.zoomablePictureBox1.Size = new System.Drawing.Size(640, 480);
             this.zoomablePictureBox1.TabIndex = 5;
             this.zoomablePictureBox1.TabStop = false;
             // 
-            // pictureBoxOutput
+            // pictureBoxRecoloured2
             // 
-            this.pictureBoxOutput.Location = new System.Drawing.Point(0, 0);
-            this.pictureBoxOutput.Name = "pictureBoxOutput";
-            this.pictureBoxOutput.Size = new System.Drawing.Size(640, 480);
-            this.pictureBoxOutput.TabIndex = 4;
-            this.pictureBoxOutput.TabStop = false;
+            this.pictureBoxRecoloured2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBoxRecoloured2.Location = new System.Drawing.Point(0, 0);
+            this.pictureBoxRecoloured2.Name = "pictureBoxRecoloured2";
+            this.pictureBoxRecoloured2.Size = new System.Drawing.Size(640, 480);
+            this.pictureBoxRecoloured2.TabIndex = 4;
+            this.pictureBoxRecoloured2.TabStop = false;
+            // 
+            // tabPage3
+            // 
+            this.tabPage3.Controls.Add(this.pictureBoxRecoloured);
+            this.tabPage3.Controls.Add(this.pictureBox1);
+            this.tabPage3.Controls.Add(this.showPaletteButton);
+            this.tabPage3.Controls.Add(this.label4);
+            this.tabPage3.Controls.Add(this.maxColoursUpDown);
+            this.tabPage3.Location = new System.Drawing.Point(4, 22);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Size = new System.Drawing.Size(1293, 515);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "Modify Colours";
+            this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // showPaletteButton
+            // 
+            this.showPaletteButton.Location = new System.Drawing.Point(182, 485);
+            this.showPaletteButton.Name = "showPaletteButton";
+            this.showPaletteButton.Size = new System.Drawing.Size(130, 23);
+            this.showPaletteButton.TabIndex = 17;
+            this.showPaletteButton.Text = "Show Palette";
+            this.showPaletteButton.UseVisualStyleBackColor = true;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(9, 490);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(65, 13);
+            this.label4.TabIndex = 16;
+            this.label4.Text = "Max Colours";
+            // 
+            // maxColoursUpDown
+            // 
+            this.maxColoursUpDown.Location = new System.Drawing.Point(85, 487);
+            this.maxColoursUpDown.Maximum = new decimal(new int[] {
+            0,
+            1,
+            0,
+            0});
+            this.maxColoursUpDown.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.maxColoursUpDown.Name = "maxColoursUpDown";
+            this.maxColoursUpDown.Size = new System.Drawing.Size(62, 20);
+            this.maxColoursUpDown.TabIndex = 15;
+            this.maxColoursUpDown.Value = new decimal(new int[] {
+            500,
+            0,
+            0,
+            0});
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBox1.Location = new System.Drawing.Point(0, 0);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(640, 480);
+            this.pictureBox1.TabIndex = 18;
+            this.pictureBox1.TabStop = false;
+            // 
+            // pictureBoxRecoloured
+            // 
+            this.pictureBoxRecoloured.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBoxRecoloured.Location = new System.Drawing.Point(648, 0);
+            this.pictureBoxRecoloured.Name = "pictureBoxRecoloured";
+            this.pictureBoxRecoloured.Size = new System.Drawing.Size(640, 480);
+            this.pictureBoxRecoloured.TabIndex = 19;
+            this.pictureBoxRecoloured.TabStop = false;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1301, 569);
-            this.Controls.Add(this.tabControl1);
+            this.Controls.Add(this.pictureBoxResized2);
             this.Controls.Add(this.menuStrip);
             this.Name = "MainForm";
             this.Text = "CrossStitchCreator";
@@ -430,16 +497,19 @@
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxOriginal)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxNew)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxResized)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.widthUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.heightUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.maxColoursUpDown)).EndInit();
-            this.tabControl1.ResumeLayout(false);
+            this.pictureBoxResized2.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.zoomablePictureBox1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxOutput)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxRecoloured2)).EndInit();
+            this.tabPage3.ResumeLayout(false);
+            this.tabPage3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.maxColoursUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxRecoloured)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -456,7 +526,7 @@
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.PictureBox pictureBoxOriginal;
-        private System.Windows.Forms.PictureBox pictureBoxNew;
+        private System.Windows.Forms.PictureBox pictureBoxResized;
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openProjectToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
@@ -468,14 +538,12 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.NumericUpDown heightUpDown;
         private System.Windows.Forms.CheckBox fixRatioCheck;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.NumericUpDown maxColoursUpDown;
-        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabControl pictureBoxResized2;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
-        private System.Windows.Forms.PictureBox pictureBoxOutput;
-        //private AdriansLib.ZoomablePictureBox zoomablePictureBox1;
-        private System.Windows.Forms.PictureBox zoomablePictureBox1;
+        private System.Windows.Forms.PictureBox pictureBoxRecoloured2;
+        private AdriansLib.ZoomablePictureBox zoomablePictureBox1;
+        
         private System.Windows.Forms.Button editButton;
         private System.Windows.Forms.ToolStripMenuItem saveProjectToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveOutputImageToolStripMenuItem;
@@ -483,6 +551,13 @@
         private System.Windows.Forms.ToolStripMenuItem saveProjectAsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveOutputImageAsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem savePatternImageAsToolStripMenuItem;
+        private System.Windows.Forms.Button updateButton;
+        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.Button showPaletteButton;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.NumericUpDown maxColoursUpDown;
+        private System.Windows.Forms.PictureBox pictureBoxRecoloured;
+        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }
 

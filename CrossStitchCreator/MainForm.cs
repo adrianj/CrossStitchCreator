@@ -21,10 +21,13 @@ namespace CrossStitchCreator
         private bool eventsEnabled = true;
         private PatternEditor patternEditor = null;
 
-        private Image mOutputImage;
-        private Image mInputImage;
-        private Image mPatternImage;
-        public Dictionary<Color, int> OutputImagePalette { get; set; }
+        private Bitmap mOutputImage;
+        private Bitmap mInputImage;
+        private Bitmap mPatternImage;
+        //public Dictionary<Color, int> OutputImagePalette { get; set; }
+
+        public ColourMap ColourMap = null;
+        private ColourMapViewer mColourViewer;
 
         public const int MAX_COLOURS = 200;
 
@@ -34,6 +37,12 @@ namespace CrossStitchCreator
             patternEditor = new PatternEditor(this);
             interpCombo.DataSource = Enum.GetValues(typeof(InterpolationMode));
             patternEditor.FormClosing += new FormClosingEventHandler(patternEditor_FormClosing);
+        }
+
+        void mColourViewer_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            e.Cancel = true;
+            mColourViewer.Hide();
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -66,7 +75,9 @@ namespace CrossStitchCreator
             this.Cursor = Cursors.WaitCursor;
             try
             {
-                mInputImage = Image.FromFile(mSettings.InputImagePath);
+                disposeColourViewer();
+                mColourViewer = null;
+                mInputImage = (Bitmap)Image.FromFile(mSettings.InputImagePath);
                 Console.WriteLine("Input Size: " + mInputImage.Size);
                 if (mInputImage.Height > 1000 || mInputImage.Width > 1000)
                 {
@@ -75,10 +86,12 @@ namespace CrossStitchCreator
                     float scale = maxDim / 1000;
                     Size newSize = new Size((int)((float)mInputImage.Width / scale),(int)((float) mInputImage.Height / scale));
                     ImagingTools tool = new ImagingTools(mInputImage);
-                    tool.ResizeImage(newSize,true,InterpolationMode.Default);
+                    tool.ResizeImage(newSize,InterpolationMode.Default);
                     mInputImage = tool.OutputImage;
+                    
                 }
                 mSettings.InputImageSize = mInputImage.Size;
+                mSettings.FixSizeRatio = fixRatioCheck.Checked;
                 Console.WriteLine("Input Size: " + mInputImage.Size);
                 mOutputImage = mInputImage;
             }
@@ -89,6 +102,7 @@ namespace CrossStitchCreator
             }
             finally { this.Cursor = Cursors.Default; }
             ResizeImage();
+            updateFormFromSettings();
         }
 
         private void updateSettingsFromForm()
@@ -118,9 +132,12 @@ namespace CrossStitchCreator
         public void ResizeImage()
         {
             this.Cursor = Cursors.WaitCursor;
-            ImagingTools tool = new ImagingTools(mInputImage);
+            ColourMap = new DMCColourMap();
+            ImagingTools tool = new ImagingTools(mInputImage, ColourMap);
             mSettings.InputImageSize = mInputImage.Size;
             tool.ResizeImage(mSettings.OutputImageSize, (InterpolationMode)interpCombo.SelectedItem);
+            tool.ReduceColourDepth();
+            tool.ReduceColourDepth(ColourMap);
             mOutputImage = tool.OutputImage;
             this.Cursor = Cursors.Default;
             RedrawImages();
@@ -129,9 +146,10 @@ namespace CrossStitchCreator
         public void RecolourImage(bool startAgain)
         {
             this.Cursor = Cursors.WaitCursor;
-            if (startAgain) ResizeImage();
-            ImagingTools tool = new ImagingTools(mOutputImage);
-            tool.ReduceColourDepth(mSettings.MaxColours, true);
+            if (startAgain) 
+                ResizeImage();
+            ImagingTools tool = new ImagingTools(mOutputImage, ColourMap);
+            tool.ReduceColourDepth(mSettings.MaxColours);
             mOutputImage = tool.OutputImage;
             this.Cursor = Cursors.Default;
             RedrawImages();
@@ -141,17 +159,17 @@ namespace CrossStitchCreator
         {
             this.Cursor = Cursors.WaitCursor;
             ImagingTools tool1 = new ImagingTools(mInputImage);
-            tool1.ResizeImage(pictureBoxOriginal.Size);
-            pictureBoxOriginal.Image = tool1.OutputImage;
-
+            pictureBoxOriginal.Image = tool1.FitToControl(pictureBoxOriginal);
             ImagingTools tool2 = new ImagingTools(mOutputImage);
+
+            UpdateColourMap();
             eventsEnabled = false;
-            maxColoursUpDown.Value = (int)tool2.OutputImagePalette.Count;
+            maxColoursUpDown.Value = ColourMap.Count;
+            mSettings.MaxColours = ColourMap.Count;
             eventsEnabled = true;
 
-            tool2.ResizeImage(pictureBoxNew.Size);
-            pictureBoxNew.Image = tool2.OutputImage;
-
+            //tool2.ResizeImage(pictureBoxNew.Size);
+            pictureBoxResized.Image = tool2.FitToControl(pictureBoxResized);
             
             this.Cursor = Cursors.Default;
         }
@@ -197,15 +215,8 @@ namespace CrossStitchCreator
         #region Tab2 Stuff
         private void tabPage2_Enter(object sender, EventArgs e)
         {
-            if (mOutputImage != null)
-            {
-                ImagingTools tool = new ImagingTools(mOutputImage);
-                tool.UpdatePalette();
-                //tool.SortPaletteByFrequency();
-                patternEditor.Palette = tool.OutputImagePalette;
-                patternEditor.Show();
-                RedrawPattern();
-            }
+            ShowPatternEditor();
+            RedrawPattern();
         }    
         
 
@@ -217,25 +228,41 @@ namespace CrossStitchCreator
 
         private void editButton_Click(object sender, EventArgs e)
         {
+            ShowPatternEditor();
+        }
+
+        public void ShowPatternEditor()
+        {
             if (mOutputImage != null)
             {
+                this.Cursor = Cursors.WaitCursor;
                 ImagingTools tool = new ImagingTools(mOutputImage);
-                tool.UpdatePalette();
-                //tool.SortPaletteByFrequency();
-                patternEditor.Palette = tool.OutputImagePalette;
+                patternEditor.UpdateColourMap();
+                this.Cursor = Cursors.Default;
                 patternEditor.Show();
-                RedrawPattern();
+            }
+        }
+
+        private void UpdateColourMap()
+        {
+
+            ImagingTools tool = new ImagingTools(mOutputImage, ColourMap);
+            tool.UpdateColourMapFromImage();
+            if (mColourViewer != null)
+            {
+                Console.WriteLine("Update viewer");
+                mColourViewer.UpdateColourMap();
             }
         }
 
         private void RedrawPattern()
         {
-            // Pattern image is PatternEditor.PATTERN_WIDTH x OutputImage.
+            // Pattern image size is PatternEditor.PATTERN_WIDTH x OutputImage.
             ImagingTools tool3 = new ImagingTools(mOutputImage);
             tool3.ReplaceColoursWithPatterns(patternEditor);
             mPatternImage = tool3.OutputImage;
             zoomablePictureBox1.Image = mPatternImage;
-            pictureBoxOutput.Image = pictureBoxNew.Image;
+            pictureBoxRecoloured2.Image = pictureBoxResized.Image;
         }
         #endregion
 
@@ -250,6 +277,63 @@ namespace CrossStitchCreator
         private void saveOutputImageAs(object sender, EventArgs e)
         {
             saveFileDialog.ShowDialog();
+        }
+
+        private void updateButton_Click(object sender, EventArgs e)
+        {
+            ShowPatternEditor();
+            RedrawPattern();
+        }
+
+        private void showPaletteButton_Click(object sender, EventArgs e)
+        {
+            if (mColourViewer == null)
+            {
+                if (ColourMap != null)
+                {
+                    mColourViewer = new ColourMapViewer(ColourMap);
+                    mColourViewer.FormClosing += new FormClosingEventHandler(mColourViewer_FormClosing);
+                    mColourViewer.ColourDeleteEvent += new ColourDeleteEventHandler(mColourViewer_ColourDeleteEvent);
+                }
+                else return;
+            }
+            UpdateColourMap();
+            mColourViewer.Show();
+            mColourViewer.Focus();
+        }
+
+        void mColourViewer_ColourDeleteEvent(object sender, ColourDeleteEventArgs e)
+        {
+            ImagingTools tool = new ImagingTools(mOutputImage, ColourMap);
+            tool.RemoveFromPalette(e.Colour);
+            RedrawImages();
+        }
+
+        private void disposeColourViewer()
+        {
+            if (mColourViewer != null)
+            {
+                mColourViewer.FormClosing -= mColourViewer_FormClosing;
+                mColourViewer.ColourDeleteEvent -= mColourViewer_ColourDeleteEvent;
+                mColourViewer.Close();
+                mColourViewer.Dispose();
+            }
+        }
+
+        private void pictureBoxNew_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (mOutputImage != null)
+            {
+                float xScale = (float)pictureBoxResized.Image.Width / (float)mOutputImage.Width;
+                float yScale = (float)pictureBoxResized.Image.Height / (float)mOutputImage.Height;
+                int x = (int)((float)e.X / xScale);
+                int y = (int)((float)e.Y / yScale);
+                if (x >= 0 && x < mOutputImage.Width && y >= 0 && y < mOutputImage.Height && mColourViewer != null)
+                {
+                    Color c = mOutputImage.GetPixel(x, y);
+                    mColourViewer.SelectColour(c);
+                }
+            }
         }
     }
 }

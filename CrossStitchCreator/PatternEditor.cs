@@ -13,7 +13,7 @@ namespace CrossStitchCreator
 {
     public partial class PatternEditor : Form
     {
-        public const int PATTERN_WIDTH = 12;
+        public const int PATTERN_WIDTH = 12 + 1;   // Nominal size of the icon resources + 1 for a border top/left
 
         private int drawing = 0;
         private Bitmap mCurrentImage = new Bitmap(PATTERN_WIDTH, PATTERN_WIDTH, PixelFormat.Format16bppRgb555);
@@ -23,41 +23,40 @@ namespace CrossStitchCreator
         private PatternCreator patternCreator = null;
 
 
+        
         /// <summary>
         /// Associates each of the colours in the pattern list with the number of times the colour appears.
         /// Will not set if number of entries exceeds MainForm.MAX_COLOURS
         /// </summary>
-        public Dictionary<Color, int> Palette
+        public void UpdateColourMap()
         {
-            set
+            patternList.Items.Clear();
+            if (mParent.ColourMap.Count > MainForm.MAX_COLOURS)
             {
-                patternList.Items.Clear();
-                if (value.Count > MainForm.MAX_COLOURS)
-                {
-                    MessageBox.Show("Too many colours!");
-                    return;
-                }
-                patternCreator = new PatternCreator();
-                Dictionary<Color, int> temp = new Dictionary<Color, int>(value);
-                // loop through all key pairs, adding max frequency first.
-                while (temp.Count > 0)
-                {
-                    int max = int.MinValue;
-                    Color maxC = Color.White;
-                    foreach (KeyValuePair<Color, int> pair in temp)
-                    {
-                        if (pair.Value > max)
-                        {
-                            max = pair.Value;
-                            maxC = pair.Key;
-                        }
-                    }
-                    AddPattern(maxC, max);
-                    temp.Remove(maxC);
-                }
-                patternList.Sort();
+                MessageBox.Show("Too many colours!");
+                return;
             }
+            patternCreator = new PatternCreator();
+            List<ColourInfo> temp = mParent.ColourMap.ToList();
+            // loop through ColourMap, adding max frequency first.
+            while (temp.Count > 0)
+            {
+                int max = int.MinValue;
+                ColourInfo maxC = temp[0];
+                foreach (ColourInfo col in temp)
+                {
+                    if (col.Frequency > max)
+                    {
+                        max = col.Frequency;
+                        maxC = col;
+                    }
+                }
+                AddPattern(maxC.Colour, max);
+                temp.Remove(maxC);
+            }
+            patternList.Sort();
         }
+        
 
         public PatternEditor(MainForm parent)
         {
@@ -68,9 +67,9 @@ namespace CrossStitchCreator
             patternList.SmallImageList.ImageSize = new Size(PATTERN_WIDTH, PATTERN_WIDTH);
             patternList.ListViewItemSorter = new PatternListComparer();
             patternCreator = new PatternCreator();
-            if (parent.OutputImagePalette != null && parent.OutputImagePalette.Count > 0)
+            if (parent.ColourMap != null && parent.ColourMap.Count > 0)
             {
-                Palette = parent.OutputImagePalette;
+                //Palette = parent.OutputImagePalette;
                 patternList.Items[0].Selected = true;
             }
         }

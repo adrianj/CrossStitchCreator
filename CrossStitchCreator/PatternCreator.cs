@@ -24,7 +24,7 @@ namespace CrossStitchCreator
                 Console.WriteLine("Resource: " + s);
 
 
-            ResourceManager rm = Properties.Resources.ResourceManager;
+            ResourceManager rm = Properties.Patterns.ResourceManager;
             ResourceSet rs = rm.GetResourceSet(new CultureInfo("en-US"), true, true);
             
             mIterator = rs.GetEnumerator();
@@ -49,37 +49,28 @@ namespace CrossStitchCreator
 
         public Bitmap GetNextPattern()
         {
+            Bitmap b = new Bitmap(PatternEditor.PATTERN_WIDTH, PatternEditor.PATTERN_WIDTH);
+            Graphics g = Graphics.FromImage(b);
+            g.FillRectangle(Brushes.White, 0, 0, b.Width, b.Height);
+            g.DrawLine(Pens.Black, 0, 0, b.Width, 0);
+            g.DrawLine(Pens.Black, 0, 0, 0, b.Height);
             if (mIterator.MoveNext())
             {
-                Bitmap b = (Bitmap)mIterator.Value;
-                return b;
+                Bitmap bRes = (Bitmap)mIterator.Value;
+                g.DrawImage(bRes, 1, 1);
             }
             else if (count < 52)
             {
-
-                Bitmap b = new Bitmap(PatternEditor.PATTERN_WIDTH, PatternEditor.PATTERN_WIDTH);
-                Graphics g = Graphics.FromImage(b);
-                g.FillRectangle(Brushes.White, 0, 0, b.Width, b.Height);
                 char c = 'a';
                 if(count < 26)
                     c = (char)('A' +count);
                 else
                     c = (char)('a' + (count-26));
-                g.DrawLine(Pens.Black, 0, 0, b.Width, 0);
-                g.DrawLine(Pens.Black, 0, 0, 0,b.Height);
                 g.DrawString(""+c, new Font("Courier", 8), new SolidBrush(Color.Black), new Point(0, 0));
-                g.Dispose();
                 count++;
-                return b;
             }
-            else
-            {
-                Bitmap b = new Bitmap(PatternEditor.PATTERN_WIDTH, PatternEditor.PATTERN_WIDTH, PixelFormat.Format16bppRgb555);
-                Graphics g = Graphics.FromImage(b);
-                g.FillRectangle(Brushes.White, 0, 0, b.Width, b.Height);
-                g.DrawRectangle(Pens.Black, 0, 0, b.Width - 1, b.Height - 1);
-                return b;
-            }
+            g.Dispose();
+            return b;
         }
     }
 }

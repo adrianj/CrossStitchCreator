@@ -59,12 +59,25 @@
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
     <Compile Include="CrossStitchSettings.cs" />
+    <Compile Include="CSVReader.cs" />
+    <Compile Include="DMCColourMap.cs" />
+    <Compile Include="DMCColours.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DMCColours.resx</DependentUpon>
+    </Compile>
     <Compile Include="ImagingTools.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ColourMapViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ColourMapViewer.Designer.cs">
+      <DependentUpon>ColourMapViewer.cs</DependentUpon>
     </Compile>
     <Compile Include="PatternCreator.cs" />
     <Compile Include="PatternEditor.cs">
@@ -78,20 +91,27 @@
     <EmbeddedResource Include="AboutBox.resx">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="DMCColours.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>DMCColours.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ColourMapViewer.resx">
+      <DependentUpon>ColourMapViewer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PatternEditor.resx">
       <DependentUpon>PatternEditor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
+    <EmbeddedResource Include="Properties\Patterns.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <LastGenOutput>Patterns1.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
+    <Compile Include="Properties\Patterns1.Designer.cs">
       <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
+      <DependentUpon>Patterns.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
@@ -123,6 +143,7 @@
     <None Include="Resources\diamond.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\DMC Cotton Floss converted to RGB Values.csv" />
     <None Include="Resources\fslash.bmp" />
   </ItemGroup>
   <ItemGroup>
