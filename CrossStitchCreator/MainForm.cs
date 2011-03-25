@@ -22,13 +22,47 @@ namespace CrossStitchCreator
         private CrossStitchSettings mSettings = new CrossStitchSettings();
         private bool eventsEnabled = true;
         private PatternEditor patternEditor = null;
+        private int maxUndos = 5;
+        private int nUndos = 0;
 
         private Bitmap mInputImage;
         private Bitmap mCroppedImage;
         private Bitmap mResizedImage;
-        private Bitmap mRecolouredImage;
+        private Bitmap[] undoRecolours;
+        private IColourMap[] undoMaps;
+        private Bitmap recolouredImage;
+        private Bitmap mRecolouredImage
+        {
+            get
+            {
+                return recolouredImage;
+            }
+            set
+            {
+                nUndos = 0;
+                Console.WriteLine("mRecolouredImageChange");
+                recolouredImage = value;
+
+                if (ColourMap == null)
+                    recolouredImage.Tag = -1;
+                else
+                {
+                    UpdateColourMap();
+                    recolouredImage.Tag = (int)ColourMap.Count;
+                }
+                for (int i = maxUndos - 1; i > 0; i--)
+                {
+                    undoMaps[i] = undoMaps[i - 1];
+                    undoRecolours[i] = undoRecolours[i - 1];
+                    Console.Write("undo shifting: ");
+                    if (undoRecolours[i] != null) Console.WriteLine("" + undoRecolours[i].Tag);
+                }
+                undoRecolours[0] = new Bitmap(recolouredImage);
+                if (ColourMap != null) undoMaps[0] = ColourMap.Clone();
+                else undoMaps[0] = null;
+            }
+        }
         private Bitmap mPatternImage;
-        //public Dictionary<Color, int> OutputImagePalette { get; set; }
 
         public IColourMap ColourMap {get;set;}
         private ColourMapViewer mColourViewer;
@@ -37,6 +71,9 @@ namespace CrossStitchCreator
 
         public MainForm()
         {
+            undoRecolours = new Bitmap[maxUndos];
+            undoMaps = new IColourMap[maxUndos];
+
             InitializeComponent();
             patternEditor = new PatternEditor(this);
             interpCombo.DataSource = Enum.GetValues(typeof(InterpolationMode));
@@ -54,13 +91,29 @@ namespace CrossStitchCreator
 
             object cmap = Activator.CreateInstance(t);
             ColourMap = (IColourMap)cmap;
+
+            // Add black and white, because they are awesome.
+            Color White = Color.FromArgb(255, 255, 255, 255);
+            Color Black = Color.FromArgb(255, 0, 0, 0);
+            if (!ColourMap.Colours.ContainsKey(White))
+            {
+                SimpleColour s = new SimpleColour("White", ColourMap.Colours.Count, White);
+                ColourMap.Colours[White] = s;
+            }
+            if (!ColourMap.Colours.ContainsKey(Black))
+            {
+                SimpleColour s = new SimpleColour("Black", ColourMap.Colours.Count, Black);
+                ColourMap.Colours[Black] = s;
+            }
+            ColourMap.Colours[White].IsChecked = true;
+            ColourMap.Colours[White].IsChecked = true;
+            ColourMap.Colours[Black].IsChecked = true;
         }
 
 
         #region Form Stuff
         private void updateSettingsFromForm()
         {
-            Console.WriteLine("UpdateSettings: (" + ColourMap + ")");
             mSettings.OutputHeight = (int)heightUpDown.Value;
             mSettings.OutputWidth = (int)widthUpDown.Value;
             mSettings.FixSizeRatio = fixRatioCheck.Checked;
@@ -72,7 +125,6 @@ namespace CrossStitchCreator
 
         private void updateFormFromSettings()
         {
-            Console.WriteLine("UpdateForm: (" + ColourMap + ")");
             eventsEnabled = false;
             heightUpDown.Value = mSettings.OutputHeight;
             widthUpDown.Value = mSettings.OutputWidth;
@@ -159,7 +211,6 @@ namespace CrossStitchCreator
                 disposeColourViewer();
                 mColourViewer = null;
                 mInputImage = (Bitmap)Image.FromFile(mSettings.InputImagePath);
-                Console.WriteLine("Input Size: " + mInputImage.Size);
                 if (mInputImage.Height > 1000 || mInputImage.Width > 1000)
                 {
                     // too big. resize to be smaller.
@@ -182,6 +233,25 @@ namespace CrossStitchCreator
             finally { this.Cursor = Cursors.Default; }
             RedrawTab1Images();
         }
+
+
+        private void undoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (nUndos+1 < maxUndos)
+            {
+                Console.WriteLine("UNDO! (" + undoRecolours[nUndos] + ")" + nUndos);
+                if (undoRecolours[nUndos+1] != null)
+                {
+                    ColourMap = undoMaps[nUndos+1];
+                    recolouredImage = undoRecolours[nUndos+1];
+                    UpdateColourMap();
+                    RedrawTab2Images();
+                    Console.WriteLine("Undo tag: " + undoRecolours[nUndos+1].Tag);
+                }
+                nUndos++;
+            }
+        }
+
         #endregion
 
         #region Tab1 Stuff
@@ -284,7 +354,8 @@ namespace CrossStitchCreator
                 tool.ReplaceColour(e.Colour, e.ReplacementColour);
             }
             mRecolouredImage = tool.OutputImage;
-            showPalette(null, null);
+            //UpdateColourMap();
+            //showPalette(null, null);
             RedrawTab2Images();
         }
 
@@ -294,9 +365,12 @@ namespace CrossStitchCreator
             {
                 ImagingTools tool = new ImagingTools(mRecolouredImage, ColourMap);
                 tool.UpdateColourMapFromImage();
+                Console.WriteLine("Updating Colour Map: " + ColourMap.Count);
+                mSettings.MaxColours = ColourMap.Count;
+                updateFormFromSettings();
                 if (mColourViewer != null)
                 {
-                    mColourViewer.UpdateColourMap();
+                    mColourViewer.UpdateColourMap(ColourMap);
                 }
             }
         }
@@ -330,8 +404,6 @@ namespace CrossStitchCreator
                 mSettings.MaxColours = (int)maxColoursUpDown.Value;
                 if (mSettings.MaxColours > old) RecolourImage(true);
                 else RecolourImage(false);
-                mSettings.MaxColours = ColourMap.Count;
-                updateFormFromSettings();
             }
         }
 
@@ -347,11 +419,13 @@ namespace CrossStitchCreator
                 tool.ReduceColourDepth(ColourMap);
                 mRecolouredImage = tool.OutputImage;
             }
-            tool = new ImagingTools(mRecolouredImage, ColourMap);
-            
-            tool.ReduceColourDepth(mSettings.MaxColours);
-            mRecolouredImage = tool.OutputImage;
-            UpdateColourMap();
+            else
+            {
+                tool = new ImagingTools(mRecolouredImage, ColourMap);
+                tool.ReduceColourDepth(mSettings.MaxColours);
+                mRecolouredImage = tool.OutputImage;
+            }
+            //UpdateColourMap();
             this.Cursor = Cursors.Default;
             RedrawTab2Images();
         }
@@ -465,6 +539,7 @@ namespace CrossStitchCreator
             RedrawPattern();
         }
         #endregion
+
 
 
 

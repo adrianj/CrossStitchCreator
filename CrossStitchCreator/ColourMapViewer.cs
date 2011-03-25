@@ -15,16 +15,18 @@ namespace CrossStitchCreator
         private IColourMap mColourMap;
         private bool mReplacing = false;
         private Color mColorToReplace;
+        private bool enableEvents = false;
 
-        public ColourMapViewer(IColourMap map)
+        public ColourMapViewer(IColourMap cmap)
         {
-            mColourMap = map;
             InitializeComponent();
-            UpdateColourMap();
+            UpdateColourMap(cmap);
         }
 
-        public void UpdateColourMap()
+        public void UpdateColourMap(IColourMap cmap)
         {
+            enableEvents = false;
+            mColourMap = cmap;
             if (mColourMap.Count > 0)
             {
                 listView.Items.Clear();
@@ -37,8 +39,10 @@ namespace CrossStitchCreator
                     listView.Items.Add(lvi);
                     
                 }
+                enableEvents = true;
                 listView.Items[0].Selected = true;
             }
+            enableEvents = true;
         }
 
         public void SelectColour(Color colour)
@@ -58,7 +62,7 @@ namespace CrossStitchCreator
                 return;
             }
             IColourInfo c = (IColourInfo)lvi.Tag;
-            c.IsChecked = lvi.Checked;
+            //c.IsChecked = lvi.Checked;
             infoBox.Text = c.PrintInfo();
             statusLabel.Text = c.Name;
             Bitmap b = new Bitmap(pictureBox.Width, pictureBox.Height);
@@ -70,7 +74,12 @@ namespace CrossStitchCreator
 
         private void listView_ItemChecked(object sender, ItemCheckedEventArgs e)
         {
-            updateInfo(e.Item);
+            if (enableEvents)
+            {
+                IColourInfo c = (IColourInfo)e.Item.Tag;
+                c.IsChecked = e.Item.Checked;
+                updateInfo(e.Item);
+            }
         }
 
         private void listView_SelectedIndexChanged(object sender, EventArgs e)
@@ -92,7 +101,7 @@ namespace CrossStitchCreator
             {
                 if (listView.SelectedIndices.Count < 1) return;
                 ListViewItem lvi = listView.SelectedItems[0];
-                OnColourChangeEvent(new ColourChangeEventArgs(lvi.BackColor));
+                if(!lvi.Checked) OnColourChangeEvent(new ColourChangeEventArgs(lvi.BackColor));
             }
         }
 
@@ -106,16 +115,19 @@ namespace CrossStitchCreator
         {
             if (listView.SelectedIndices.Count < 1) return;
             ListViewItem lvi = listView.SelectedItems[0];
-            OnColourChangeEvent(new ColourChangeEventArgs(lvi.BackColor));
+            if(!lvi.Checked) OnColourChangeEvent(new ColourChangeEventArgs(lvi.BackColor));
         }
 
         private void replaceToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (listView.SelectedIndices.Count < 1) return;
             ListViewItem lvi = listView.SelectedItems[0];
-            mReplacing = true;
-            mColorToReplace = lvi.BackColor;
-            statusLabel.Text = "Select Colour to replace this one";
+            if (!lvi.Checked)
+            {
+                mReplacing = true;
+                mColorToReplace = lvi.BackColor;
+                statusLabel.Text = "Select Colour to replace this one";
+            }
         }
     }
 

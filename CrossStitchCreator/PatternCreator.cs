@@ -42,8 +42,8 @@ namespace CrossStitchCreator
             Bitmap b = new Bitmap(PatternEditor.PATTERN_WIDTH, PatternEditor.PATTERN_WIDTH,PixelFormat.Format16bppRgb555);
             Graphics g = Graphics.FromImage(b);
             g.FillRectangle(Brushes.White, 0, 0, b.Width, b.Height);
-            g.DrawLine(Pens.Gray, 0, 0, b.Width, 0);
-            g.DrawLine(Pens.Gray, 0, 0, 0, b.Height);
+            g.DrawRectangle(Pens.Gray, 0, 0, b.Width, b.Height);
+            
             if (mIterator.MoveNext())
             {
                 Bitmap bRes = (Bitmap)mIterator.Value;

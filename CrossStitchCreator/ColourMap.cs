@@ -32,6 +32,7 @@ namespace CrossStitchCreator
         /// <returns></returns>
         List<IColourInfo> ToList();
         List<Color> GetPalette();
+        IColourMap Clone();
     }
 
     public interface IColourInfo
@@ -52,19 +53,35 @@ namespace CrossStitchCreator
         public Dictionary<Color, IColourInfo> Colours { get; set; }
         public int Count { get { return Colours.Count; } }
 
-        public SimpleColourMap()
+        public SimpleColourMap() : this(false) { }
+
+        public SimpleColourMap(bool createEmpty)
         {
             Colours = new Dictionary<Color, IColourInfo>();
-            Console.WriteLine("Constructing?");
-            int index = 0;
-            for(int r = 0; r < 256; r+=16)
-                for(int g = 0; g < 256; g+=16)
-                    for (int b = 0; b < 256; b+=16)
-                    {
-                        Color c = Color.FromArgb(255, r, g, b);
-                        SimpleColour s = new SimpleColour("" + c, index, c);
-                        Colours[c] = s;
-                    }
+            if (!createEmpty)
+            {
+                Console.WriteLine("Constructing?");
+                int index = 0;
+                for (int r = 0; r < 256; r += 16)
+                    for (int g = 0; g < 256; g += 16)
+                        for (int b = 0; b < 256; b += 16)
+                        {
+                            Color c = Color.FromArgb(255, r, g, b);
+                            SimpleColour s = new SimpleColour("" + c, index, c);
+                            Colours[c] = s;
+                        }
+            }
+        }
+
+        public virtual IColourMap Clone()
+        {
+            IColourMap cmap = new SimpleColourMap(true);
+            Colours = new Dictionary<Color, IColourInfo>();
+            foreach (KeyValuePair<Color, IColourInfo> pair in cmap.Colours)
+            {
+                Colours[pair.Key] = pair.Value.Clone();
+            }
+            return cmap;
         }
 
         public Color GetNearestColour(Color colourToMatch)
@@ -128,7 +145,12 @@ namespace CrossStitchCreator
         }
 
         public IColourInfo GetLeastCommonColourInfo(bool matchWhenChecked)
-        { return Colours[GetLeastCommonColour(matchWhenChecked)]; }
+        {
+            Color c = GetLeastCommonColour(matchWhenChecked);
+            if (Colours.ContainsKey(c)) return Colours[c];
+            return null;
+
+        }
 
        
 
@@ -153,6 +175,8 @@ namespace CrossStitchCreator
 
         public void RemoveColour(Color c)
         {
+            if (c == Color.FromArgb(255, 255, 255, 255))
+                Console.WriteLine("Deleting white!");
             if (Colours.ContainsKey(c)) Colours.Remove(c);
         }
 
@@ -173,7 +197,18 @@ namespace CrossStitchCreator
         public Color Colour { get; set; }
         public int Index { get; set; }
         public string Name { get; set; }
-        public bool IsChecked { get; set; }
+        private bool mChecked = false;
+        public bool IsChecked
+        {
+            get
+            {
+                return mChecked;
+            }
+            set
+            {
+                mChecked = value;
+            }
+        }
         public object Tag { get; set; }
         public int Frequency { get; set; }
 
@@ -190,6 +225,7 @@ namespace CrossStitchCreator
             Colour = d.Colour;
             Tag = d.Tag;
             Frequency = d.Frequency;
+            IsChecked = d.IsChecked;
         }
 
         public virtual string PrintInfo()

@@ -74,6 +74,7 @@
             this.editButton = new System.Windows.Forms.Button();
             this.pictureBoxPattern = new AdriansLib.ZoomablePictureBox();
             this.pictureBoxRecoloured2 = new System.Windows.Forms.PictureBox();
+            this.undoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxOriginal)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxResized)).BeginInit();
@@ -117,6 +118,7 @@
             this.openProjectToolStripMenuItem,
             this.saveToolStripMenuItem,
             this.saveAsToolStripMenuItem,
+            this.undoToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(35, 20);
@@ -543,6 +545,14 @@
             this.pictureBoxRecoloured2.TabIndex = 4;
             this.pictureBoxRecoloured2.TabStop = false;
             // 
+            // undoToolStripMenuItem
+            // 
+            this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
+            this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size(200, 22);
+            this.undoToolStripMenuItem.Text = "Undo";
+            this.undoToolStripMenuItem.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -622,6 +632,7 @@
         private System.Windows.Forms.Button recolourButton;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ComboBox colourMapCombo;
+        private System.Windows.Forms.ToolStripMenuItem undoToolStripMenuItem;
     }
 }
 

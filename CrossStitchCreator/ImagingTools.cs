@@ -37,7 +37,7 @@ namespace CrossStitchCreator
                 }
         }
 
-        public void RemoveFromPalette(IColourInfo colorToRemove) { RemoveFromPalette(colorToRemove.Colour); }
+        public void RemoveFromPalette(IColourInfo colorToRemove) { if(colorToRemove != null) RemoveFromPalette(colorToRemove.Colour); }
         public void RemoveFromPalette(Color colorToRemove)
         {
             ColourMap.RemoveColour(colorToRemove);
@@ -110,6 +110,8 @@ namespace CrossStitchCreator
                 for (int y = 0; y < b.Height; y++)
                 {
                     Color c = b.GetPixel(x, y);
+                    //if (!ColourMap.Colours.ContainsKey(c))
+                    //    ColourMap.Colours[c] = new DMCColour("???", ColourMap.Count, c, "???");
                     ColourMap.Colours[c].Frequency++;
                 }
         }
@@ -121,7 +123,7 @@ namespace CrossStitchCreator
             IColourInfo[] temp = ColourMap.ToArray();
             foreach (IColourInfo col in temp)
             {
-                if (col.Frequency < 1)
+                if (col.Frequency < 1 && !col.IsChecked)
                 {
                     ColourMap.RemoveColour(col.Colour);
                 }
