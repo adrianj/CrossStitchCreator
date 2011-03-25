@@ -8,6 +8,8 @@ using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Reflection;
+using System.IO;
 
 
 namespace CrossStitchCreator
@@ -21,15 +23,17 @@ namespace CrossStitchCreator
         private bool eventsEnabled = true;
         private PatternEditor patternEditor = null;
 
-        private Bitmap mOutputImage;
         private Bitmap mInputImage;
+        private Bitmap mCroppedImage;
+        private Bitmap mResizedImage;
+        private Bitmap mRecolouredImage;
         private Bitmap mPatternImage;
         //public Dictionary<Color, int> OutputImagePalette { get; set; }
 
-        public ColourMap ColourMap = null;
+        public IColourMap ColourMap {get;set;}
         private ColourMapViewer mColourViewer;
 
-        public const int MAX_COLOURS = 200;
+        public const int MAX_COLOURS = 500;
 
         public MainForm()
         {
@@ -37,14 +41,53 @@ namespace CrossStitchCreator
             patternEditor = new PatternEditor(this);
             interpCombo.DataSource = Enum.GetValues(typeof(InterpolationMode));
             patternEditor.FormClosing += new FormClosingEventHandler(patternEditor_FormClosing);
+            colourMapCombo.Items.Add(typeof(DMCColourMap));
+            colourMapCombo.Items.Add(typeof(SimpleColourMap));
+            colourMapCombo.SelectedIndex = 0;
         }
 
-        void mColourViewer_FormClosing(object sender, FormClosingEventArgs e)
+        public void CreateNewColourMap()
         {
-            e.Cancel = true;
-            mColourViewer.Hide();
+            Type t = (Type)colourMapCombo.SelectedItem;
+            //ConstructorInfo c = t.GetConstructor(new Type[] { });
+            //object[] ps = new object[] { };
+
+            object cmap = Activator.CreateInstance(t);
+            ColourMap = (IColourMap)cmap;
         }
 
+
+        #region Form Stuff
+        private void updateSettingsFromForm()
+        {
+            Console.WriteLine("UpdateSettings: (" + ColourMap + ")");
+            mSettings.OutputHeight = (int)heightUpDown.Value;
+            mSettings.OutputWidth = (int)widthUpDown.Value;
+            mSettings.FixSizeRatio = fixRatioCheck.Checked;
+            if (ColourMap == null)
+                mSettings.MaxColours = MAX_COLOURS;
+            else
+                mSettings.MaxColours = ColourMap.Count;
+        }
+
+        private void updateFormFromSettings()
+        {
+            Console.WriteLine("UpdateForm: (" + ColourMap + ")");
+            eventsEnabled = false;
+            heightUpDown.Value = mSettings.OutputHeight;
+            widthUpDown.Value = mSettings.OutputWidth;
+            fixRatioCheck.Checked = mSettings.FixSizeRatio;
+            maxColoursUpDown.Value = mSettings.MaxColours;
+            eventsEnabled = true;
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            updateSettingsFromForm();
+        }
+        #endregion
+
+        #region Main Menu Stuff
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             aboutBox.ShowDialog();
@@ -70,6 +113,44 @@ namespace CrossStitchCreator
             LoadImage();
         }
 
+        private void saveOutputImage(object sender, EventArgs e)
+        {
+            if (mSettings.OutputImagePath == null)
+            {
+                saveOutputImageAs(sender, e);
+            }
+        }
+
+        private void saveOutputImageAs(object sender, EventArgs e)
+        {
+            if (mPatternImage == null) return;
+            string filter = "24bit Bitmap (*.bmp)|*.bmp|JPEG (*.jpeg)|*.jpeg|TIFF (*.tiff)|*.tiff,*.tif|Gif (*.gif)|*.gif";
+            saveFileDialog.Filter = filter;
+            saveFileDialog.ShowDialog();
+            string extension = Path.GetExtension(saveFileDialog.FileName).Substring(1);
+            try
+            {
+                if(extension.Equals("bmp"))
+                    mPatternImage.Save(saveFileDialog.FileName, ImageFormat.Bmp);
+                else if(extension.Equals("gif"))
+                    mPatternImage.Save(saveFileDialog.FileName, ImageFormat.Gif);
+                else if (extension.Equals("tiff") || extension.Equals("tif"))
+                    mPatternImage.Save(saveFileDialog.FileName, ImageFormat.Tiff);
+                else if (extension.Equals("jpeg") || extension.Equals("jpg"))
+                    mPatternImage.Save(saveFileDialog.FileName, ImageFormat.Jpeg);
+                else
+                {
+                    MessageBox.Show("No Codec to save to this format");
+                    return;
+                }
+            }
+            catch (IOException ioe)
+            {
+                MessageBox.Show("Saving Image Failed: " + ioe);
+            }
+            
+        }
+
         public void LoadImage()
         {
             this.Cursor = Cursors.WaitCursor;
@@ -92,8 +173,6 @@ namespace CrossStitchCreator
                 }
                 mSettings.InputImageSize = mInputImage.Size;
                 mSettings.FixSizeRatio = fixRatioCheck.Checked;
-                Console.WriteLine("Input Size: " + mInputImage.Size);
-                mOutputImage = mInputImage;
             }
             catch (ArgumentException e)
             {
@@ -101,82 +180,50 @@ namespace CrossStitchCreator
                     + Environment.NewLine + e + Environment.NewLine + e.StackTrace);
             }
             finally { this.Cursor = Cursors.Default; }
-            ResizeImage();
-            updateFormFromSettings();
+            RedrawTab1Images();
         }
-
-        private void updateSettingsFromForm()
-        {
-            mSettings.OutputHeight = (int)heightUpDown.Value;
-            mSettings.OutputWidth = (int)widthUpDown.Value;
-            mSettings.FixSizeRatio = fixRatioCheck.Checked;
-        }
-
-        private void updateFormFromSettings()
-        {
-            eventsEnabled = false;
-            heightUpDown.Value = mSettings.OutputHeight;
-            widthUpDown.Value = mSettings.OutputWidth;
-            fixRatioCheck.Checked = mSettings.FixSizeRatio;
-            maxColoursUpDown.Value = mSettings.MaxColours;
-            eventsEnabled = true;
-        }
-
-        private void MainForm_Load(object sender, EventArgs e)
-        {
-            updateSettingsFromForm();
-        }
+        #endregion
 
         #region Tab1 Stuff
 
-        public void ResizeImage()
+        public void ResizeImage(object sender, EventArgs e)
         {
+            if (mInputImage == null) return;
             this.Cursor = Cursors.WaitCursor;
-            ColourMap = new DMCColourMap();
-            ImagingTools tool = new ImagingTools(mInputImage, ColourMap);
-            mSettings.InputImageSize = mInputImage.Size;
+            ImagingTools tool;
+            if (mCroppedImage == null)
+                tool = new ImagingTools(mInputImage, ColourMap);
+            else
+                tool = new ImagingTools(mCroppedImage, ColourMap);
+            //mSettings.InputImageSize = mInputImage.Size;
             tool.ResizeImage(mSettings.OutputImageSize, (InterpolationMode)interpCombo.SelectedItem);
-            tool.ReduceColourDepth();
-            tool.ReduceColourDepth(ColourMap);
-            mOutputImage = tool.OutputImage;
+            mResizedImage = tool.OutputImage;
             this.Cursor = Cursors.Default;
-            RedrawImages();
+            RedrawTab1Images();
         }
 
-        public void RecolourImage(bool startAgain)
+        public void CropImage(object sender, EventArgs e)
+        {
+            mResizedImage = null;
+            RedrawTab1Images();
+        }
+
+        private void RedrawTab1Images()
         {
             this.Cursor = Cursors.WaitCursor;
-            if (startAgain) 
-                ResizeImage();
-            ImagingTools tool = new ImagingTools(mOutputImage, ColourMap);
-            tool.ReduceColourDepth(mSettings.MaxColours);
-            mOutputImage = tool.OutputImage;
+            if (mInputImage != null)
+            {
+                ImagingTools tool1 = new ImagingTools(mInputImage);
+                pictureBoxOriginal.Image = tool1.FitToControl(pictureBoxOriginal);
+            }
+            if (mResizedImage != null)
+            {
+                ImagingTools tool2 = new ImagingTools(mResizedImage);
+                pictureBoxResized.Image = tool2.FitToControl(pictureBoxOriginal);
+            }
+
+            updateFormFromSettings();
             this.Cursor = Cursors.Default;
-            RedrawImages();
-        }
-
-        private void RedrawImages()
-        {
-            this.Cursor = Cursors.WaitCursor;
-            ImagingTools tool1 = new ImagingTools(mInputImage);
-            pictureBoxOriginal.Image = tool1.FitToControl(pictureBoxOriginal);
-            ImagingTools tool2 = new ImagingTools(mOutputImage);
-
-            UpdateColourMap();
-            eventsEnabled = false;
-            maxColoursUpDown.Value = ColourMap.Count;
-            mSettings.MaxColours = ColourMap.Count;
-            eventsEnabled = true;
-
-            //tool2.ResizeImage(pictureBoxNew.Size);
-            pictureBoxResized.Image = tool2.FitToControl(pictureBoxResized);
-            
-            this.Cursor = Cursors.Default;
-        }
-
-        private void interpCombo_DropDownClosed(object sender, EventArgs e)
-        {
-            ResizeImage();
         }
 
         private void modifyOutputSize(object sender, EventArgs e)
@@ -195,28 +242,170 @@ namespace CrossStitchCreator
                 {
                     mSettings.FixSizeRatio = fixRatioCheck.Checked;
                 }
+                else if (sender == interpCombo)
+                {
+                    mSettings.IntMode = (InterpolationMode)interpCombo.SelectedItem;
+                }
                 updateFormFromSettings();
-                ResizeImage();
             }
         }
+
+        #endregion
+
+        #region Tab2 Stuff
+
+        private void showPalette(object sender, EventArgs e)
+        {
+            if (mColourViewer == null)
+            {
+                if (ColourMap != null)
+                {
+                    mColourViewer = new ColourMapViewer(ColourMap);
+                    mColourViewer.FormClosing += new FormClosingEventHandler(mColourViewer_FormClosing);
+                    mColourViewer.ColourChangeEvent += new ColourChangeEventHandler(mColourViewer_ColourChangeEvent);
+                }
+                else return;
+            }
+            UpdateColourMap();
+            mColourViewer.Show();
+            mColourViewer.Focus();
+        }
+
+        void mColourViewer_ColourChangeEvent(object sender, ColourChangeEventArgs e)
+        {
+            if (mRecolouredImage == null) return;
+            ImagingTools tool = new ImagingTools(mRecolouredImage, ColourMap);
+            if (!e.DoReplace)
+            {
+                tool.RemoveFromPalette(e.Colour);
+            }
+            else
+            {
+                tool.ReplaceColour(e.Colour, e.ReplacementColour);
+            }
+            mRecolouredImage = tool.OutputImage;
+            showPalette(null, null);
+            RedrawTab2Images();
+        }
+
+        private void UpdateColourMap()
+        {
+            if (mRecolouredImage != null && ColourMap != null)
+            {
+                ImagingTools tool = new ImagingTools(mRecolouredImage, ColourMap);
+                tool.UpdateColourMapFromImage();
+                if (mColourViewer != null)
+                {
+                    mColourViewer.UpdateColourMap();
+                }
+            }
+        }
+
+        private void RedrawTab2Images()
+        {
+            this.Cursor = Cursors.WaitCursor;
+            if (mResizedImage != null)
+            {
+                ImagingTools tool1 = new ImagingTools(mResizedImage);
+                pictureBoxResized2.Image = tool1.FitToControl(pictureBoxOriginal);
+            }
+            if (mRecolouredImage != null)
+            {
+                ImagingTools tool2 = new ImagingTools(mRecolouredImage);
+                pictureBoxRecoloured.Image = tool2.FitToControl(pictureBoxOriginal);
+            }
+            updateFormFromSettings();
+            this.Cursor = Cursors.Default;
+        }
+
         private void modifyColours(object sender, EventArgs e)
         {
-            if (eventsEnabled)
+            if (eventsEnabled && mResizedImage != null)
             {
+                if (sender == maxColoursUpDown)
+                {
+                    updateSettingsFromForm();
+                }
                 int old = mSettings.MaxColours;
                 mSettings.MaxColours = (int)maxColoursUpDown.Value;
                 if (mSettings.MaxColours > old) RecolourImage(true);
                 else RecolourImage(false);
+                mSettings.MaxColours = ColourMap.Count;
+                updateFormFromSettings();
             }
+        }
+
+        public void RecolourImage(bool startAgain)
+        {
+            this.Cursor = Cursors.WaitCursor;
+            ImagingTools tool;
+            if (mRecolouredImage == null || startAgain)
+            {
+                CreateNewColourMap();
+                tool = new ImagingTools(mResizedImage, ColourMap);
+                //tool.ReduceColourDepth();
+                tool.ReduceColourDepth(ColourMap);
+                mRecolouredImage = tool.OutputImage;
+            }
+            tool = new ImagingTools(mRecolouredImage, ColourMap);
+            
+            tool.ReduceColourDepth(mSettings.MaxColours);
+            mRecolouredImage = tool.OutputImage;
+            UpdateColourMap();
+            this.Cursor = Cursors.Default;
+            RedrawTab2Images();
+        }
+
+
+        private void disposeColourViewer()
+        {
+            if (mColourViewer != null)
+            {
+                mColourViewer.FormClosing -= mColourViewer_FormClosing;
+                mColourViewer.ColourChangeEvent -= mColourViewer_ColourChangeEvent;
+                mColourViewer.Close();
+                mColourViewer.Dispose();
+            }
+        }
+
+        void mColourViewer_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            e.Cancel = true;
+            mColourViewer.Hide();
+        }
+
+        private void pictureBoxNew_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (mRecolouredImage != null)
+            {
+                float xScale = (float)pictureBoxResized.Image.Width / (float)mRecolouredImage.Width;
+                float yScale = (float)pictureBoxResized.Image.Height / (float)mRecolouredImage.Height;
+                int x = (int)((float)e.X / xScale);
+                int y = (int)((float)e.Y / yScale);
+                if (mColourViewer == null || mColourViewer.Visible == false)
+                {
+                    showPalette(null, null);
+                }
+                if (x >= 0 && x < mRecolouredImage.Width && y >= 0 && y < mRecolouredImage.Height)
+                {
+                    Color c = mRecolouredImage.GetPixel(x, y);
+                    mColourViewer.SelectColour(c);
+                }
+            }
+        }
+
+
+        private void tabPageRecolour_Enter(object sender, EventArgs e)
+        {
+            RedrawTab2Images();
         }
         #endregion
 
-
-        #region Tab2 Stuff
+        #region Tab3 Stuff
         private void tabPage2_Enter(object sender, EventArgs e)
         {
+            RedrawTab3Images();
             ShowPatternEditor();
-            RedrawPattern();
         }    
         
 
@@ -233,50 +422,41 @@ namespace CrossStitchCreator
 
         public void ShowPatternEditor()
         {
-            if (mOutputImage != null)
+            if (mRecolouredImage != null)
             {
                 this.Cursor = Cursors.WaitCursor;
-                ImagingTools tool = new ImagingTools(mOutputImage);
+                ImagingTools tool = new ImagingTools(mRecolouredImage);
                 patternEditor.UpdateColourMap();
                 this.Cursor = Cursors.Default;
                 patternEditor.Show();
             }
         }
 
-        private void UpdateColourMap()
+        private void RedrawTab3Images()
         {
-
-            ImagingTools tool = new ImagingTools(mOutputImage, ColourMap);
-            tool.UpdateColourMapFromImage();
-            if (mColourViewer != null)
+            this.Cursor = Cursors.WaitCursor;
+            if (mRecolouredImage != null)
             {
-                Console.WriteLine("Update viewer");
-                mColourViewer.UpdateColourMap();
+                ImagingTools tool1 = new ImagingTools(mRecolouredImage);
+                pictureBoxRecoloured2.Image = tool1.FitToControl(pictureBoxRecoloured2);
             }
+            if (mPatternImage != null)
+            {
+                ImagingTools tool2 = new ImagingTools(mPatternImage);
+                pictureBoxPattern.Image = tool2.FitToControl(pictureBoxPattern);
+            }
+            updateFormFromSettings();
+            this.Cursor = Cursors.Default;
         }
-
         private void RedrawPattern()
         {
-            // Pattern image size is PatternEditor.PATTERN_WIDTH x OutputImage.
-            ImagingTools tool3 = new ImagingTools(mOutputImage);
-            tool3.ReplaceColoursWithPatterns(patternEditor);
-            mPatternImage = tool3.OutputImage;
-            zoomablePictureBox1.Image = mPatternImage;
-            pictureBoxRecoloured2.Image = pictureBoxResized.Image;
-        }
-        #endregion
-
-        private void saveOutputImage(object sender, EventArgs e)
-        {
-            if (mSettings.OutputImagePath == null)
+            if (mRecolouredImage != null)
             {
-                saveOutputImageAs(sender, e);
+                ImagingTools tool3 = new ImagingTools(mRecolouredImage);
+                tool3.ReplaceColoursWithPatterns(patternEditor);
+                mPatternImage = tool3.OutputImage;
+                pictureBoxPattern.Image = mPatternImage;
             }
-        }
-
-        private void saveOutputImageAs(object sender, EventArgs e)
-        {
-            saveFileDialog.ShowDialog();
         }
 
         private void updateButton_Click(object sender, EventArgs e)
@@ -284,56 +464,11 @@ namespace CrossStitchCreator
             ShowPatternEditor();
             RedrawPattern();
         }
+        #endregion
 
-        private void showPaletteButton_Click(object sender, EventArgs e)
-        {
-            if (mColourViewer == null)
-            {
-                if (ColourMap != null)
-                {
-                    mColourViewer = new ColourMapViewer(ColourMap);
-                    mColourViewer.FormClosing += new FormClosingEventHandler(mColourViewer_FormClosing);
-                    mColourViewer.ColourDeleteEvent += new ColourDeleteEventHandler(mColourViewer_ColourDeleteEvent);
-                }
-                else return;
-            }
-            UpdateColourMap();
-            mColourViewer.Show();
-            mColourViewer.Focus();
-        }
 
-        void mColourViewer_ColourDeleteEvent(object sender, ColourDeleteEventArgs e)
-        {
-            ImagingTools tool = new ImagingTools(mOutputImage, ColourMap);
-            tool.RemoveFromPalette(e.Colour);
-            RedrawImages();
-        }
 
-        private void disposeColourViewer()
-        {
-            if (mColourViewer != null)
-            {
-                mColourViewer.FormClosing -= mColourViewer_FormClosing;
-                mColourViewer.ColourDeleteEvent -= mColourViewer_ColourDeleteEvent;
-                mColourViewer.Close();
-                mColourViewer.Dispose();
-            }
-        }
 
-        private void pictureBoxNew_MouseClick(object sender, MouseEventArgs e)
-        {
-            if (mOutputImage != null)
-            {
-                float xScale = (float)pictureBoxResized.Image.Width / (float)mOutputImage.Width;
-                float yScale = (float)pictureBoxResized.Image.Height / (float)mOutputImage.Height;
-                int x = (int)((float)e.X / xScale);
-                int y = (int)((float)e.Y / yScale);
-                if (x >= 0 && x < mOutputImage.Width && y >= 0 && y < mOutputImage.Height && mColourViewer != null)
-                {
-                    Color c = mOutputImage.GetPixel(x, y);
-                    mColourViewer.SelectColour(c);
-                }
-            }
-        }
+
     }
 }

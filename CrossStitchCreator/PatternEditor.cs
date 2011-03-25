@@ -37,13 +37,13 @@ namespace CrossStitchCreator
                 return;
             }
             patternCreator = new PatternCreator();
-            List<ColourInfo> temp = mParent.ColourMap.ToList();
+            List<IColourInfo> temp = mParent.ColourMap.ToList();
             // loop through ColourMap, adding max frequency first.
             while (temp.Count > 0)
             {
                 int max = int.MinValue;
-                ColourInfo maxC = temp[0];
-                foreach (ColourInfo col in temp)
+                IColourInfo maxC = temp[0];
+                foreach (IColourInfo col in temp)
                 {
                     if (col.Frequency > max)
                     {

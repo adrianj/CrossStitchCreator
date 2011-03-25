@@ -12,27 +12,30 @@ namespace CrossStitchCreator
     public partial class ColourMapViewer : Form
     {
 
-        public ColourMap ColourMap;
+        private IColourMap mColourMap;
+        private bool mReplacing = false;
+        private Color mColorToReplace;
 
-        public ColourMapViewer(ColourMap map)
+        public ColourMapViewer(IColourMap map)
         {
-            ColourMap = map;
+            mColourMap = map;
             InitializeComponent();
             UpdateColourMap();
         }
 
         public void UpdateColourMap()
         {
-            if (ColourMap.Count > 0)
+            if (mColourMap.Count > 0)
             {
                 listView.Items.Clear();
-                foreach (KeyValuePair<Color, ColourInfo> pair in ColourMap.Colours)
+                foreach (KeyValuePair<Color, IColourInfo> pair in mColourMap.Colours)
                 {
                     ListViewItem lvi = new ListViewItem(pair.Value.Name);
                     lvi.BackColor = pair.Value.Colour;
                     lvi.Checked = pair.Value.IsChecked;
                     lvi.Tag = pair.Value;
                     listView.Items.Add(lvi);
+                    
                 }
                 listView.Items[0].Selected = true;
             }
@@ -54,9 +57,10 @@ namespace CrossStitchCreator
                 infoBox.Text = "";
                 return;
             }
-            ColourInfo c = (ColourInfo)lvi.Tag;
+            IColourInfo c = (IColourInfo)lvi.Tag;
             c.IsChecked = lvi.Checked;
             infoBox.Text = c.PrintInfo();
+            statusLabel.Text = c.Name;
             Bitmap b = new Bitmap(pictureBox.Width, pictureBox.Height);
             Graphics g = Graphics.FromImage(b);
             g.FillRectangle(new SolidBrush(lvi.BackColor), 0, 0, b.Width, b.Height);
@@ -67,13 +71,17 @@ namespace CrossStitchCreator
         private void listView_ItemChecked(object sender, ItemCheckedEventArgs e)
         {
             updateInfo(e.Item);
-           
         }
 
         private void listView_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (listView.SelectedIndices.Count < 1) return;
             ListViewItem lvi = listView.SelectedItems[0];
+            if (mReplacing)
+            {
+                mReplacing = false;
+                OnColourChangeEvent(new ColourChangeEventArgs(mColorToReplace, lvi.BackColor));
+            }
             updateInfo(lvi);
             
         }
@@ -84,22 +92,48 @@ namespace CrossStitchCreator
             {
                 if (listView.SelectedIndices.Count < 1) return;
                 ListViewItem lvi = listView.SelectedItems[0];
-                OnColourDeleteEvent(new ColourDeleteEventArgs(lvi.BackColor));
+                OnColourChangeEvent(new ColourChangeEventArgs(lvi.BackColor));
             }
         }
 
-        public event ColourDeleteEventHandler ColourDeleteEvent;
-        public virtual void OnColourDeleteEvent(ColourDeleteEventArgs e)
+        public event ColourChangeEventHandler ColourChangeEvent;
+        public virtual void OnColourChangeEvent(ColourChangeEventArgs e)
         {
-            ColourDeleteEvent(this, e);
+            ColourChangeEvent(this, e);
+        }
+
+        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView.SelectedIndices.Count < 1) return;
+            ListViewItem lvi = listView.SelectedItems[0];
+            OnColourChangeEvent(new ColourChangeEventArgs(lvi.BackColor));
+        }
+
+        private void replaceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView.SelectedIndices.Count < 1) return;
+            ListViewItem lvi = listView.SelectedItems[0];
+            mReplacing = true;
+            mColorToReplace = lvi.BackColor;
+            statusLabel.Text = "Select Colour to replace this one";
         }
     }
 
-    public class ColourDeleteEventArgs : EventArgs
+    public class ColourChangeEventArgs : EventArgs
     {
         private Color mColour;
         public Color Colour { get { return mColour; } }
-        public ColourDeleteEventArgs(Color colour) { mColour = colour; }
+        private Color mReplacement;
+        public Color ReplacementColour {get { return mReplacement;}}
+        public bool DoReplace { get { return mDoReplace; } }
+        private bool mDoReplace = false;
+
+        public ColourChangeEventArgs(Color colour) { mColour = colour; }
+        public ColourChangeEventArgs(Color colour, Color replacement) { 
+            mColour = colour;
+            mDoReplace = true;
+            mReplacement = replacement;
+        }
     }
-    public delegate void ColourDeleteEventHandler(object sender, ColourDeleteEventArgs e);
+    public delegate void ColourChangeEventHandler(object sender, ColourChangeEventArgs e);
 }

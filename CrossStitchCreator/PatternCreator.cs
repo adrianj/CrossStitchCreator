@@ -19,11 +19,6 @@ namespace CrossStitchCreator
 
         public PatternCreator()
         {
-            string[] res = Assembly.GetExecutingAssembly().GetManifestResourceNames();
-            foreach (string s in res)
-                Console.WriteLine("Resource: " + s);
-
-
             ResourceManager rm = Properties.Patterns.ResourceManager;
             ResourceSet rs = rm.GetResourceSet(new CultureInfo("en-US"), true, true);
             
@@ -33,27 +28,22 @@ namespace CrossStitchCreator
             {
                 object val = mIterator.Value;
                 object key = mIterator.Key;
-                Console.WriteLine("Inside rs: ("+key+") "+val);
                 if (val is Image)
                 {
                     Image img = (Image)val;
-                    Console.WriteLine("Found an image! " + img.Size);
                 }
                 count++;
             }
-            Console.WriteLine("count: " + count);
             mIterator = rs.GetEnumerator();
-
-
         }
 
         public Bitmap GetNextPattern()
         {
-            Bitmap b = new Bitmap(PatternEditor.PATTERN_WIDTH, PatternEditor.PATTERN_WIDTH);
+            Bitmap b = new Bitmap(PatternEditor.PATTERN_WIDTH, PatternEditor.PATTERN_WIDTH,PixelFormat.Format16bppRgb555);
             Graphics g = Graphics.FromImage(b);
             g.FillRectangle(Brushes.White, 0, 0, b.Width, b.Height);
-            g.DrawLine(Pens.Black, 0, 0, b.Width, 0);
-            g.DrawLine(Pens.Black, 0, 0, 0, b.Height);
+            g.DrawLine(Pens.Gray, 0, 0, b.Width, 0);
+            g.DrawLine(Pens.Gray, 0, 0, 0, b.Height);
             if (mIterator.MoveNext())
             {
                 Bitmap bRes = (Bitmap)mIterator.Value;

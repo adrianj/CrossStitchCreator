@@ -40,6 +40,7 @@
     <Reference Include="AdriansLib">
       <HintPath>..\..\AdriansLib\AdriansLib\bin\Debug\AdriansLib.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -58,6 +59,7 @@
     <Compile Include="AboutBox.Designer.cs">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="ColourMap.cs" />
     <Compile Include="CrossStitchSettings.cs" />
     <Compile Include="CSVReader.cs" />
     <Compile Include="DMCColourMap.cs" />

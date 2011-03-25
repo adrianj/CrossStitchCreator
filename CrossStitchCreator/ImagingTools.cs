@@ -5,6 +5,7 @@ using System.Text;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Drawing.Drawing2D;
+using System.Windows.Media.Imaging; // PresentationCore.dll
 
 namespace CrossStitchCreator
 {
@@ -14,11 +15,11 @@ namespace CrossStitchCreator
         public Bitmap InputImage { get; set; }
         private Bitmap mOutput;
         public Bitmap OutputImage { get {  return mOutput; } }
-        public ColourMap ColourMap { get; set; }
+        public IColourMap ColourMap { get; set; }
 
         public ImagingTools(Image inputImage) : this(inputImage, null) { }
 
-        public ImagingTools(Image inputImage, ColourMap cmap)
+        public ImagingTools(Image inputImage, IColourMap cmap)
         {
             InputImage = (Bitmap)inputImage;
             mOutput = InputImage;
@@ -36,6 +37,7 @@ namespace CrossStitchCreator
                 }
         }
 
+        public void RemoveFromPalette(IColourInfo colorToRemove) { RemoveFromPalette(colorToRemove.Colour); }
         public void RemoveFromPalette(Color colorToRemove)
         {
             ColourMap.RemoveColour(colorToRemove);
@@ -116,8 +118,8 @@ namespace CrossStitchCreator
         {
             if (mOutput == null || ColourMap == null) return;
             UpdateColourMapFrequency();
-            ColourInfo[] temp = ColourMap.ToArray();
-            foreach (ColourInfo col in temp)
+            IColourInfo[] temp = ColourMap.ToArray();
+            foreach (IColourInfo col in temp)
             {
                 if (col.Frequency < 1)
                 {
@@ -143,12 +145,15 @@ namespace CrossStitchCreator
                     b.SetPixel(x, y, newC);
                 }
             mOutput = b;
+
+            UpdateColourMapFromImage();
             int nColours = ColourMap.Count;
             Console.WriteLine("ReduceColourDepth: colours after simple reduction = " + nColours);
         }
         public void ReduceColourDepth(int maxColours)
         {
 
+            UpdateColourMapFromImage();
             Bitmap orig = mOutput;
             Bitmap b = new Bitmap(orig.Width, orig.Height, PixelFormat.Format24bppRgb);
 
@@ -163,7 +168,9 @@ namespace CrossStitchCreator
 
                 for (int i = 0; i < toRemove; i++)
                 {
-                    RemoveFromPalette(ColourMap.GetLeastCommonColour(true));
+                    IColourInfo least = ColourMap.GetLeastCommonColourInfo(true);
+                    RemoveFromPalette(least);
+                    UpdateColourMapFromImage();
                     prog.Increment(1);
                 }
                 prog.Close();
@@ -174,8 +181,9 @@ namespace CrossStitchCreator
             Console.WriteLine("ReduceColourDepth: final number of colours = " + nColours);
         }
         // Convert colours to fit a given colourmap
-        public void ReduceColourDepth(ColourMap cmap)
+        public void ReduceColourDepth(IColourMap cmap)
         {
+            ColourMap = cmap;
             Bitmap orig = mOutput;
             Bitmap b = new Bitmap(orig.Width, orig.Height, PixelFormat.Format24bppRgb);
 
@@ -193,6 +201,7 @@ namespace CrossStitchCreator
                 }
             mOutput = b;
             prog.Close();
+            UpdateColourMapFromImage();
             Console.WriteLine("ReduceColourDepth: final number of colours = " + ColourMap.Count);
         }
 
@@ -201,6 +210,7 @@ namespace CrossStitchCreator
             int pScale = PatternEditor.PATTERN_WIDTH;
             Bitmap orig = mOutput;
             Bitmap b = new Bitmap(orig.Width * pScale, orig.Height * pScale, PixelFormat.Format24bppRgb);
+            
 
             Graphics g = Graphics.FromImage(b);
             AdriansLib.ProgressBarForm prog = new AdriansLib.ProgressBarForm("Replacing Colours With Patterns...", orig.Width * orig.Height);
@@ -219,33 +229,5 @@ namespace CrossStitchCreator
             mOutput = b;
         }
 
-        /*
-        // This is a pretty hideous O(n^2) implementation...
-        public void SortPaletteByFrequency()
-        {
-            if (mPalette.Count > 1)
-            {
-                Dictionary<Color, int> sorted = new Dictionary<Color, int>();
-                while (mPalette.Count > 0)
-                {
-                    int max = int.MinValue;
-                    Color maxC = Color.White;
-                    foreach (KeyValuePair<Color, int> pair in mPalette)
-                    {
-                        if (pair.Value > max)
-                        {
-                            maxC = pair.Key;
-                            max = pair.Value;
-                        }
-                    }
-                    
-                    //Console.WriteLine(""+mPalette.Count+","+max+","+maxC);
-                    sorted.Add(maxC, max);
-                    mPalette.Remove(maxC);
-                }
-                mPalette = sorted;
-            }
-        }
-         */
     }
 }

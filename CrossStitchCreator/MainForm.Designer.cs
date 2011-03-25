@@ -56,32 +56,37 @@
             this.label3 = new System.Windows.Forms.Label();
             this.heightUpDown = new System.Windows.Forms.NumericUpDown();
             this.fixRatioCheck = new System.Windows.Forms.CheckBox();
-            this.pictureBoxResized2 = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.updateButton = new System.Windows.Forms.Button();
-            this.editButton = new System.Windows.Forms.Button();
-            this.zoomablePictureBox1 = new AdriansLib.ZoomablePictureBox();
-            this.pictureBoxRecoloured2 = new System.Windows.Forms.PictureBox();
-            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.tabControl = new System.Windows.Forms.TabControl();
+            this.tabPageResize = new System.Windows.Forms.TabPage();
+            this.cropButton = new System.Windows.Forms.Button();
+            this.resizeButton = new System.Windows.Forms.Button();
+            this.tabPageRecolour = new System.Windows.Forms.TabPage();
+            this.label5 = new System.Windows.Forms.Label();
+            this.colourMapCombo = new System.Windows.Forms.ComboBox();
+            this.recolourButton = new System.Windows.Forms.Button();
+            this.pictureBoxRecoloured = new System.Windows.Forms.PictureBox();
+            this.pictureBoxResized2 = new System.Windows.Forms.PictureBox();
             this.showPaletteButton = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.maxColoursUpDown = new System.Windows.Forms.NumericUpDown();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.pictureBoxRecoloured = new System.Windows.Forms.PictureBox();
+            this.tabPagePattern = new System.Windows.Forms.TabPage();
+            this.updateButton = new System.Windows.Forms.Button();
+            this.editButton = new System.Windows.Forms.Button();
+            this.pictureBoxPattern = new AdriansLib.ZoomablePictureBox();
+            this.pictureBoxRecoloured2 = new System.Windows.Forms.PictureBox();
             this.menuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxOriginal)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxResized)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.widthUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.heightUpDown)).BeginInit();
-            this.pictureBoxResized2.SuspendLayout();
-            this.tabPage1.SuspendLayout();
-            this.tabPage2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxRecoloured2)).BeginInit();
-            this.tabPage3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.maxColoursUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.tabControl.SuspendLayout();
+            this.tabPageResize.SuspendLayout();
+            this.tabPageRecolour.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxRecoloured)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxResized2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.maxColoursUpDown)).BeginInit();
+            this.tabPagePattern.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxRecoloured2)).BeginInit();
             this.SuspendLayout();
             // 
             // openFileDialog
@@ -229,21 +234,20 @@
             this.pictureBoxResized.Size = new System.Drawing.Size(640, 480);
             this.pictureBoxResized.TabIndex = 4;
             this.pictureBoxResized.TabStop = false;
-            this.pictureBoxResized.MouseClick += new System.Windows.Forms.MouseEventHandler(this.pictureBoxNew_MouseClick);
             // 
             // interpCombo
             // 
             this.interpCombo.FormattingEnabled = true;
-            this.interpCombo.Location = new System.Drawing.Point(107, 486);
+            this.interpCombo.Location = new System.Drawing.Point(410, 488);
             this.interpCombo.Name = "interpCombo";
             this.interpCombo.Size = new System.Drawing.Size(121, 21);
             this.interpCombo.TabIndex = 5;
-            this.interpCombo.DropDownClosed += new System.EventHandler(this.interpCombo_DropDownClosed);
+            this.interpCombo.DropDownClosed += new System.EventHandler(this.modifyOutputSize);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(2, 489);
+            this.label1.Location = new System.Drawing.Point(305, 491);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(95, 13);
             this.label1.TabIndex = 6;
@@ -251,7 +255,7 @@
             // 
             // widthUpDown
             // 
-            this.widthUpDown.Location = new System.Drawing.Point(320, 489);
+            this.widthUpDown.Location = new System.Drawing.Point(623, 491);
             this.widthUpDown.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -275,7 +279,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(244, 492);
+            this.label2.Location = new System.Drawing.Point(547, 494);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(70, 13);
             this.label2.TabIndex = 8;
@@ -284,7 +288,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(388, 492);
+            this.label3.Location = new System.Drawing.Point(691, 494);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(73, 13);
             this.label3.TabIndex = 10;
@@ -292,7 +296,7 @@
             // 
             // heightUpDown
             // 
-            this.heightUpDown.Location = new System.Drawing.Point(464, 490);
+            this.heightUpDown.Location = new System.Drawing.Point(767, 492);
             this.heightUpDown.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -318,135 +322,152 @@
             this.fixRatioCheck.AutoSize = true;
             this.fixRatioCheck.Checked = true;
             this.fixRatioCheck.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.fixRatioCheck.Location = new System.Drawing.Point(540, 491);
+            this.fixRatioCheck.Location = new System.Drawing.Point(843, 493);
             this.fixRatioCheck.Name = "fixRatioCheck";
             this.fixRatioCheck.Size = new System.Drawing.Size(67, 17);
             this.fixRatioCheck.TabIndex = 11;
             this.fixRatioCheck.Text = "Fix Ratio";
             this.fixRatioCheck.UseVisualStyleBackColor = true;
-            this.fixRatioCheck.CheckedChanged += new System.EventHandler(this.modifyOutputSize);
+            this.fixRatioCheck.CheckedChanged += new System.EventHandler(this.modifyColours);
+            // 
+            // tabControl
+            // 
+            this.tabControl.Controls.Add(this.tabPageResize);
+            this.tabControl.Controls.Add(this.tabPageRecolour);
+            this.tabControl.Controls.Add(this.tabPagePattern);
+            this.tabControl.Location = new System.Drawing.Point(0, 27);
+            this.tabControl.Name = "tabControl";
+            this.tabControl.SelectedIndex = 0;
+            this.tabControl.Size = new System.Drawing.Size(1301, 541);
+            this.tabControl.TabIndex = 14;
+            // 
+            // tabPageResize
+            // 
+            this.tabPageResize.Controls.Add(this.cropButton);
+            this.tabPageResize.Controls.Add(this.resizeButton);
+            this.tabPageResize.Controls.Add(this.pictureBoxOriginal);
+            this.tabPageResize.Controls.Add(this.label3);
+            this.tabPageResize.Controls.Add(this.widthUpDown);
+            this.tabPageResize.Controls.Add(this.pictureBoxResized);
+            this.tabPageResize.Controls.Add(this.label1);
+            this.tabPageResize.Controls.Add(this.heightUpDown);
+            this.tabPageResize.Controls.Add(this.fixRatioCheck);
+            this.tabPageResize.Controls.Add(this.label2);
+            this.tabPageResize.Controls.Add(this.interpCombo);
+            this.tabPageResize.Location = new System.Drawing.Point(4, 22);
+            this.tabPageResize.Name = "tabPageResize";
+            this.tabPageResize.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageResize.Size = new System.Drawing.Size(1293, 515);
+            this.tabPageResize.TabIndex = 0;
+            this.tabPageResize.Text = "Crop and Resize";
+            this.tabPageResize.UseVisualStyleBackColor = true;
+            // 
+            // cropButton
+            // 
+            this.cropButton.Location = new System.Drawing.Point(4, 486);
+            this.cropButton.Name = "cropButton";
+            this.cropButton.Size = new System.Drawing.Size(130, 23);
+            this.cropButton.TabIndex = 13;
+            this.cropButton.Text = "Apply Crop";
+            this.cropButton.UseVisualStyleBackColor = true;
+            this.cropButton.Click += new System.EventHandler(this.CropImage);
+            // 
+            // resizeButton
+            // 
+            this.resizeButton.Location = new System.Drawing.Point(140, 486);
+            this.resizeButton.Name = "resizeButton";
+            this.resizeButton.Size = new System.Drawing.Size(130, 23);
+            this.resizeButton.TabIndex = 12;
+            this.resizeButton.Text = "Apply Resize";
+            this.resizeButton.UseVisualStyleBackColor = true;
+            this.resizeButton.Click += new System.EventHandler(this.ResizeImage);
+            // 
+            // tabPageRecolour
+            // 
+            this.tabPageRecolour.Controls.Add(this.label5);
+            this.tabPageRecolour.Controls.Add(this.colourMapCombo);
+            this.tabPageRecolour.Controls.Add(this.recolourButton);
+            this.tabPageRecolour.Controls.Add(this.pictureBoxRecoloured);
+            this.tabPageRecolour.Controls.Add(this.pictureBoxResized2);
+            this.tabPageRecolour.Controls.Add(this.showPaletteButton);
+            this.tabPageRecolour.Controls.Add(this.label4);
+            this.tabPageRecolour.Controls.Add(this.maxColoursUpDown);
+            this.tabPageRecolour.Location = new System.Drawing.Point(4, 22);
+            this.tabPageRecolour.Name = "tabPageRecolour";
+            this.tabPageRecolour.Size = new System.Drawing.Size(1293, 515);
+            this.tabPageRecolour.TabIndex = 2;
+            this.tabPageRecolour.Text = "Modify Colours";
+            this.tabPageRecolour.UseVisualStyleBackColor = true;
+            this.tabPageRecolour.Enter += new System.EventHandler(this.tabPageRecolour_Enter);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(296, 490);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(61, 13);
+            this.label5.TabIndex = 22;
+            this.label5.Text = "Colour Map";
+            // 
+            // colourMapCombo
+            // 
+            this.colourMapCombo.FormattingEnabled = true;
+            this.colourMapCombo.Location = new System.Drawing.Point(363, 487);
+            this.colourMapCombo.Name = "colourMapCombo";
+            this.colourMapCombo.Size = new System.Drawing.Size(277, 21);
+            this.colourMapCombo.TabIndex = 21;
+            // 
+            // recolourButton
+            // 
+            this.recolourButton.Location = new System.Drawing.Point(4, 486);
+            this.recolourButton.Name = "recolourButton";
+            this.recolourButton.Size = new System.Drawing.Size(130, 23);
+            this.recolourButton.TabIndex = 20;
+            this.recolourButton.Text = "Apply Recolour";
+            this.recolourButton.UseVisualStyleBackColor = true;
+            this.recolourButton.Click += new System.EventHandler(this.modifyColours);
+            // 
+            // pictureBoxRecoloured
+            // 
+            this.pictureBoxRecoloured.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBoxRecoloured.Location = new System.Drawing.Point(648, 0);
+            this.pictureBoxRecoloured.Name = "pictureBoxRecoloured";
+            this.pictureBoxRecoloured.Size = new System.Drawing.Size(640, 480);
+            this.pictureBoxRecoloured.TabIndex = 19;
+            this.pictureBoxRecoloured.TabStop = false;
+            this.pictureBoxRecoloured.MouseClick += new System.Windows.Forms.MouseEventHandler(this.pictureBoxNew_MouseClick);
             // 
             // pictureBoxResized2
             // 
-            this.pictureBoxResized2.Controls.Add(this.tabPage1);
-            this.pictureBoxResized2.Controls.Add(this.tabPage3);
-            this.pictureBoxResized2.Controls.Add(this.tabPage2);
-            this.pictureBoxResized2.Location = new System.Drawing.Point(0, 27);
+            this.pictureBoxResized2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBoxResized2.Location = new System.Drawing.Point(0, 0);
             this.pictureBoxResized2.Name = "pictureBoxResized2";
-            this.pictureBoxResized2.SelectedIndex = 0;
-            this.pictureBoxResized2.Size = new System.Drawing.Size(1301, 541);
-            this.pictureBoxResized2.TabIndex = 14;
-            // 
-            // tabPage1
-            // 
-            this.tabPage1.Controls.Add(this.pictureBoxOriginal);
-            this.tabPage1.Controls.Add(this.label3);
-            this.tabPage1.Controls.Add(this.widthUpDown);
-            this.tabPage1.Controls.Add(this.pictureBoxResized);
-            this.tabPage1.Controls.Add(this.label1);
-            this.tabPage1.Controls.Add(this.heightUpDown);
-            this.tabPage1.Controls.Add(this.fixRatioCheck);
-            this.tabPage1.Controls.Add(this.label2);
-            this.tabPage1.Controls.Add(this.interpCombo);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(1293, 515);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Crop and Resize";
-            this.tabPage1.UseVisualStyleBackColor = true;
-            // 
-            // tabPage2
-            // 
-            this.tabPage2.Controls.Add(this.updateButton);
-            this.tabPage2.Controls.Add(this.editButton);
-            this.tabPage2.Controls.Add(this.zoomablePictureBox1);
-            this.tabPage2.Controls.Add(this.pictureBoxRecoloured2);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(1293, 515);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Produce Pattern";
-            this.tabPage2.UseVisualStyleBackColor = true;
-            this.tabPage2.Enter += new System.EventHandler(this.tabPage2_Enter);
-            // 
-            // updateButton
-            // 
-            this.updateButton.Location = new System.Drawing.Point(144, 486);
-            this.updateButton.Name = "updateButton";
-            this.updateButton.Size = new System.Drawing.Size(130, 23);
-            this.updateButton.TabIndex = 7;
-            this.updateButton.Text = "Update Pattern";
-            this.updateButton.UseVisualStyleBackColor = true;
-            this.updateButton.Click += new System.EventHandler(this.updateButton_Click);
-            // 
-            // editButton
-            // 
-            this.editButton.Location = new System.Drawing.Point(8, 486);
-            this.editButton.Name = "editButton";
-            this.editButton.Size = new System.Drawing.Size(130, 23);
-            this.editButton.TabIndex = 6;
-            this.editButton.Text = "Show Pattern Editor";
-            this.editButton.UseVisualStyleBackColor = true;
-            this.editButton.Click += new System.EventHandler(this.editButton_Click);
-            // 
-            // zoomablePictureBox1
-            // 
-            this.zoomablePictureBox1.Border = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.zoomablePictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.zoomablePictureBox1.Image = null;
-            this.zoomablePictureBox1.Location = new System.Drawing.Point(648, 0);
-            this.zoomablePictureBox1.Name = "zoomablePictureBox1";
-            this.zoomablePictureBox1.Picture = "";
-            this.zoomablePictureBox1.Size = new System.Drawing.Size(640, 480);
-            this.zoomablePictureBox1.TabIndex = 5;
-            this.zoomablePictureBox1.TabStop = false;
-            // 
-            // pictureBoxRecoloured2
-            // 
-            this.pictureBoxRecoloured2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBoxRecoloured2.Location = new System.Drawing.Point(0, 0);
-            this.pictureBoxRecoloured2.Name = "pictureBoxRecoloured2";
-            this.pictureBoxRecoloured2.Size = new System.Drawing.Size(640, 480);
-            this.pictureBoxRecoloured2.TabIndex = 4;
-            this.pictureBoxRecoloured2.TabStop = false;
-            // 
-            // tabPage3
-            // 
-            this.tabPage3.Controls.Add(this.pictureBoxRecoloured);
-            this.tabPage3.Controls.Add(this.pictureBox1);
-            this.tabPage3.Controls.Add(this.showPaletteButton);
-            this.tabPage3.Controls.Add(this.label4);
-            this.tabPage3.Controls.Add(this.maxColoursUpDown);
-            this.tabPage3.Location = new System.Drawing.Point(4, 22);
-            this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(1293, 515);
-            this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "Modify Colours";
-            this.tabPage3.UseVisualStyleBackColor = true;
+            this.pictureBoxResized2.Size = new System.Drawing.Size(640, 480);
+            this.pictureBoxResized2.TabIndex = 18;
+            this.pictureBoxResized2.TabStop = false;
             // 
             // showPaletteButton
             // 
-            this.showPaletteButton.Location = new System.Drawing.Point(182, 485);
+            this.showPaletteButton.Location = new System.Drawing.Point(140, 486);
             this.showPaletteButton.Name = "showPaletteButton";
             this.showPaletteButton.Size = new System.Drawing.Size(130, 23);
             this.showPaletteButton.TabIndex = 17;
             this.showPaletteButton.Text = "Show Palette";
             this.showPaletteButton.UseVisualStyleBackColor = true;
+            this.showPaletteButton.Click += new System.EventHandler(this.showPalette);
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(9, 490);
+            this.label4.Location = new System.Drawing.Point(683, 490);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(65, 13);
+            this.label4.Size = new System.Drawing.Size(94, 13);
             this.label4.TabIndex = 16;
-            this.label4.Text = "Max Colours";
+            this.label4.Text = "Number of Colours";
             // 
             // maxColoursUpDown
             // 
-            this.maxColoursUpDown.Location = new System.Drawing.Point(85, 487);
+            this.maxColoursUpDown.Location = new System.Drawing.Point(783, 488);
             this.maxColoursUpDown.Maximum = new decimal(new int[] {
             0,
             1,
@@ -465,31 +486,69 @@
             0,
             0,
             0});
+            this.maxColoursUpDown.ValueChanged += new System.EventHandler(this.modifyColours);
             // 
-            // pictureBox1
+            // tabPagePattern
             // 
-            this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBox1.Location = new System.Drawing.Point(0, 0);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(640, 480);
-            this.pictureBox1.TabIndex = 18;
-            this.pictureBox1.TabStop = false;
+            this.tabPagePattern.Controls.Add(this.updateButton);
+            this.tabPagePattern.Controls.Add(this.editButton);
+            this.tabPagePattern.Controls.Add(this.pictureBoxPattern);
+            this.tabPagePattern.Controls.Add(this.pictureBoxRecoloured2);
+            this.tabPagePattern.Location = new System.Drawing.Point(4, 22);
+            this.tabPagePattern.Name = "tabPagePattern";
+            this.tabPagePattern.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPagePattern.Size = new System.Drawing.Size(1293, 515);
+            this.tabPagePattern.TabIndex = 1;
+            this.tabPagePattern.Text = "Produce Pattern";
+            this.tabPagePattern.UseVisualStyleBackColor = true;
+            this.tabPagePattern.Enter += new System.EventHandler(this.tabPage2_Enter);
             // 
-            // pictureBoxRecoloured
+            // updateButton
             // 
-            this.pictureBoxRecoloured.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pictureBoxRecoloured.Location = new System.Drawing.Point(648, 0);
-            this.pictureBoxRecoloured.Name = "pictureBoxRecoloured";
-            this.pictureBoxRecoloured.Size = new System.Drawing.Size(640, 480);
-            this.pictureBoxRecoloured.TabIndex = 19;
-            this.pictureBoxRecoloured.TabStop = false;
+            this.updateButton.Location = new System.Drawing.Point(140, 486);
+            this.updateButton.Name = "updateButton";
+            this.updateButton.Size = new System.Drawing.Size(130, 23);
+            this.updateButton.TabIndex = 7;
+            this.updateButton.Text = "Update Pattern";
+            this.updateButton.UseVisualStyleBackColor = true;
+            this.updateButton.Click += new System.EventHandler(this.updateButton_Click);
+            // 
+            // editButton
+            // 
+            this.editButton.Location = new System.Drawing.Point(4, 486);
+            this.editButton.Name = "editButton";
+            this.editButton.Size = new System.Drawing.Size(130, 23);
+            this.editButton.TabIndex = 6;
+            this.editButton.Text = "Show Pattern Editor";
+            this.editButton.UseVisualStyleBackColor = true;
+            this.editButton.Click += new System.EventHandler(this.editButton_Click);
+            // 
+            // pictureBoxPattern
+            // 
+            this.pictureBoxPattern.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBoxPattern.Image = null;
+            this.pictureBoxPattern.Location = new System.Drawing.Point(648, 0);
+            this.pictureBoxPattern.Name = "pictureBoxPattern";
+            this.pictureBoxPattern.Picture = "";
+            this.pictureBoxPattern.Size = new System.Drawing.Size(640, 480);
+            this.pictureBoxPattern.TabIndex = 5;
+            this.pictureBoxPattern.TabStop = false;
+            // 
+            // pictureBoxRecoloured2
+            // 
+            this.pictureBoxRecoloured2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBoxRecoloured2.Location = new System.Drawing.Point(0, 0);
+            this.pictureBoxRecoloured2.Name = "pictureBoxRecoloured2";
+            this.pictureBoxRecoloured2.Size = new System.Drawing.Size(640, 480);
+            this.pictureBoxRecoloured2.TabIndex = 4;
+            this.pictureBoxRecoloured2.TabStop = false;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1301, 569);
-            this.Controls.Add(this.pictureBoxResized2);
+            this.Controls.Add(this.tabControl);
             this.Controls.Add(this.menuStrip);
             this.Name = "MainForm";
             this.Text = "CrossStitchCreator";
@@ -500,16 +559,16 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxResized)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.widthUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.heightUpDown)).EndInit();
-            this.pictureBoxResized2.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
-            this.tabPage1.PerformLayout();
-            this.tabPage2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxRecoloured2)).EndInit();
-            this.tabPage3.ResumeLayout(false);
-            this.tabPage3.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.maxColoursUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.tabControl.ResumeLayout(false);
+            this.tabPageResize.ResumeLayout(false);
+            this.tabPageResize.PerformLayout();
+            this.tabPageRecolour.ResumeLayout(false);
+            this.tabPageRecolour.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxRecoloured)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxResized2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.maxColoursUpDown)).EndInit();
+            this.tabPagePattern.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxRecoloured2)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -538,11 +597,11 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.NumericUpDown heightUpDown;
         private System.Windows.Forms.CheckBox fixRatioCheck;
-        private System.Windows.Forms.TabControl pictureBoxResized2;
-        private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.TabControl tabControl;
+        private System.Windows.Forms.TabPage tabPageResize;
+        private System.Windows.Forms.TabPage tabPagePattern;
         private System.Windows.Forms.PictureBox pictureBoxRecoloured2;
-        private AdriansLib.ZoomablePictureBox zoomablePictureBox1;
+        private AdriansLib.ZoomablePictureBox pictureBoxPattern;
         
         private System.Windows.Forms.Button editButton;
         private System.Windows.Forms.ToolStripMenuItem saveProjectToolStripMenuItem;
@@ -552,12 +611,17 @@
         private System.Windows.Forms.ToolStripMenuItem saveOutputImageAsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem savePatternImageAsToolStripMenuItem;
         private System.Windows.Forms.Button updateButton;
-        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.TabPage tabPageRecolour;
         private System.Windows.Forms.Button showPaletteButton;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.NumericUpDown maxColoursUpDown;
         private System.Windows.Forms.PictureBox pictureBoxRecoloured;
-        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.PictureBox pictureBoxResized2;
+        private System.Windows.Forms.Button cropButton;
+        private System.Windows.Forms.Button resizeButton;
+        private System.Windows.Forms.Button recolourButton;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.ComboBox colourMapCombo;
     }
 }
 
