@@ -26,6 +26,13 @@ namespace CrossStitchCreator
         public void UpdateColourMap(IColourMap cmap)
         {
             enableEvents = false;
+            Color previouslySelected = Color.Wheat;
+            bool pSel = false;
+            if (listView.SelectedIndices.Count > 0)
+            {
+                pSel = true;
+                previouslySelected = listView.SelectedItems[0].BackColor;
+            }
             mColourMap = cmap;
             if (mColourMap.Count > 0)
             {
@@ -40,7 +47,10 @@ namespace CrossStitchCreator
                     
                 }
                 enableEvents = true;
-                listView.Items[0].Selected = true;
+                if (pSel && cmap.Colours.ContainsKey(previouslySelected))
+                {
+                    SelectColour(previouslySelected);
+                }
             }
             enableEvents = true;
         }

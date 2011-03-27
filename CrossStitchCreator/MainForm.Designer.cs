@@ -44,6 +44,7 @@
             this.saveProjectAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveOutputImageAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.savePatternImageAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.undoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -74,7 +75,6 @@
             this.editButton = new System.Windows.Forms.Button();
             this.pictureBoxPattern = new AdriansLib.ZoomablePictureBox();
             this.pictureBoxRecoloured2 = new System.Windows.Forms.PictureBox();
-            this.undoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxOriginal)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxResized)).BeginInit();
@@ -196,6 +196,14 @@
             this.savePatternImageAsToolStripMenuItem.Name = "savePatternImageAsToolStripMenuItem";
             this.savePatternImageAsToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
             this.savePatternImageAsToolStripMenuItem.Text = "Save Pattern Image As...";
+            // 
+            // undoToolStripMenuItem
+            // 
+            this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
+            this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size(200, 22);
+            this.undoToolStripMenuItem.Text = "Undo";
+            this.undoToolStripMenuItem.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
@@ -425,7 +433,7 @@
             this.recolourButton.Name = "recolourButton";
             this.recolourButton.Size = new System.Drawing.Size(130, 23);
             this.recolourButton.TabIndex = 20;
-            this.recolourButton.Text = "Apply Recolour";
+            this.recolourButton.Text = "Restart Recolour";
             this.recolourButton.UseVisualStyleBackColor = true;
             this.recolourButton.Click += new System.EventHandler(this.modifyColours);
             // 
@@ -438,6 +446,10 @@
             this.pictureBoxRecoloured.TabIndex = 19;
             this.pictureBoxRecoloured.TabStop = false;
             this.pictureBoxRecoloured.MouseClick += new System.Windows.Forms.MouseEventHandler(this.pictureBoxNew_MouseClick);
+            this.pictureBoxRecoloured.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBoxNew_MouseClick);
+            this.pictureBoxRecoloured.MouseLeave += new System.EventHandler(this.StopPainting);
+            this.pictureBoxRecoloured.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBoxNew_MouseClick);
+            this.pictureBoxRecoloured.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBoxNew_MouseClick);
             // 
             // pictureBoxResized2
             // 
@@ -544,14 +556,6 @@
             this.pictureBoxRecoloured2.Size = new System.Drawing.Size(640, 480);
             this.pictureBoxRecoloured2.TabIndex = 4;
             this.pictureBoxRecoloured2.TabStop = false;
-            // 
-            // undoToolStripMenuItem
-            // 
-            this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
-            this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
-            this.undoToolStripMenuItem.Size = new System.Drawing.Size(200, 22);
-            this.undoToolStripMenuItem.Text = "Undo";
-            this.undoToolStripMenuItem.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
             // 
             // MainForm
             // 

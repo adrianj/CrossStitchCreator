@@ -23,13 +23,13 @@ namespace CrossStitchCreator
         private bool eventsEnabled = true;
         private PatternEditor patternEditor = null;
         private int maxUndos = 5;
-        private int nUndos = 0;
+        private bool suspendUndo = false;
 
         private Bitmap mInputImage;
         private Bitmap mCroppedImage;
         private Bitmap mResizedImage;
         private Bitmap[] undoRecolours;
-        private IColourMap[] undoMaps;
+        //private IColourMap[] undoMaps;
         private Bitmap recolouredImage;
         private Bitmap mRecolouredImage
         {
@@ -39,27 +39,41 @@ namespace CrossStitchCreator
             }
             set
             {
-                nUndos = 0;
                 Console.WriteLine("mRecolouredImageChange");
+                if (!suspendUndo)
+                {
+                    for (int i = maxUndos - 1; i > 0; i--)
+                    {
+                        //undoMaps[i] = undoMaps[i - 1];
+                        undoRecolours[i] = undoRecolours[i - 1];
+                        Console.Write("undo shifting: ");
+                        if (undoRecolours[i] != null) Console.WriteLine("" + undoRecolours[i].Tag);
+                    }
+                    if (recolouredImage != null)
+                    {
+                        undoRecolours[0] = new Bitmap(recolouredImage);
+                        undoRecolours[0].Tag = recolouredImage.Tag;
+                    }
+                    else undoRecolours[0] = null;
+                }
                 recolouredImage = value;
-
-                if (ColourMap == null)
-                    recolouredImage.Tag = -1;
-                else
+                UpdateColourMap();
+                if (ColourMap != null) recolouredImage.Tag = ColourMap.Clone();
+                else recolouredImage.Tag = null;
+                for (int i = 0; i < maxUndos; i++)
                 {
-                    UpdateColourMap();
-                    recolouredImage.Tag = (int)ColourMap.Count;
+                    if (undoRecolours[i] != null)
+                    {
+                        Console.Write("Undo: " + i + ", " + undoRecolours[i].Tag);
+                        if (undoRecolours[i].Tag != null)
+                        {
+                            IColourMap cmap = (IColourMap)undoRecolours[i].Tag;
+                            Console.WriteLine(", " + cmap.Count);
+                        }
+                        else Console.WriteLine(", null");
+                    }
+                    else Console.Write("Undo: " + i + ", null, null");
                 }
-                for (int i = maxUndos - 1; i > 0; i--)
-                {
-                    undoMaps[i] = undoMaps[i - 1];
-                    undoRecolours[i] = undoRecolours[i - 1];
-                    Console.Write("undo shifting: ");
-                    if (undoRecolours[i] != null) Console.WriteLine("" + undoRecolours[i].Tag);
-                }
-                undoRecolours[0] = new Bitmap(recolouredImage);
-                if (ColourMap != null) undoMaps[0] = ColourMap.Clone();
-                else undoMaps[0] = null;
             }
         }
         private Bitmap mPatternImage;
@@ -72,7 +86,7 @@ namespace CrossStitchCreator
         public MainForm()
         {
             undoRecolours = new Bitmap[maxUndos];
-            undoMaps = new IColourMap[maxUndos];
+            //undoMaps = new IColourMap[maxUndos];
 
             InitializeComponent();
             patternEditor = new PatternEditor(this);
@@ -237,18 +251,35 @@ namespace CrossStitchCreator
 
         private void undoToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (nUndos+1 < maxUndos)
+            for (int i = 0; i < maxUndos; i++)
             {
-                Console.WriteLine("UNDO! (" + undoRecolours[nUndos] + ")" + nUndos);
-                if (undoRecolours[nUndos+1] != null)
+                if (undoRecolours[i] != null)
                 {
-                    ColourMap = undoMaps[nUndos+1];
-                    recolouredImage = undoRecolours[nUndos+1];
-                    UpdateColourMap();
-                    RedrawTab2Images();
-                    Console.WriteLine("Undo tag: " + undoRecolours[nUndos+1].Tag);
+                    Console.Write("Undo: " + i + ", " + undoRecolours[i].Tag);
+                    if (undoRecolours[i].Tag != null)
+                    {
+                        IColourMap cmap = (IColourMap)undoRecolours[i].Tag;
+                        Console.WriteLine(", " + cmap.Count);
+                    }
+                    else Console.WriteLine(", null");
                 }
-                nUndos++;
+                else Console.WriteLine("Undo: " + i + ", null, null");
+            }
+            if (undoRecolours[0] != null)
+            {
+                Console.WriteLine("Undo tag: " + undoRecolours[0].Tag);
+                // shift undo arrays to the left.
+                ColourMap = (IColourMap)undoRecolours[0].Tag;
+                recolouredImage = undoRecolours[0];
+                for (int i = 0; i < maxUndos - 1; i++)
+                {
+                    undoRecolours[i] = undoRecolours[i + 1];
+                    //undoMaps[i] = undoMaps[i + 1];
+                }
+                undoRecolours[maxUndos - 1] = null;
+                //undoMaps[maxUndos - 1] = null;
+                UpdateColourMap();
+                RedrawTab2Images();
             }
         }
 
@@ -400,9 +431,7 @@ namespace CrossStitchCreator
                 {
                     updateSettingsFromForm();
                 }
-                int old = mSettings.MaxColours;
-                mSettings.MaxColours = (int)maxColoursUpDown.Value;
-                if (mSettings.MaxColours > old) RecolourImage(true);
+                if (sender == recolourButton) RecolourImage(true);
                 else RecolourImage(false);
             }
         }
@@ -422,7 +451,7 @@ namespace CrossStitchCreator
             else
             {
                 tool = new ImagingTools(mRecolouredImage, ColourMap);
-                tool.ReduceColourDepth(mSettings.MaxColours);
+                tool.ReduceColourDepth((int)maxColoursUpDown.Value);
                 mRecolouredImage = tool.OutputImage;
             }
             //UpdateColourMap();
@@ -448,6 +477,10 @@ namespace CrossStitchCreator
             mColourViewer.Hide();
         }
 
+        private Color mPaintingColor;
+        private bool mPainting = false;
+        private bool lastClickWasRight = false;
+
         private void pictureBoxNew_MouseClick(object sender, MouseEventArgs e)
         {
             if (mRecolouredImage != null)
@@ -456,15 +489,53 @@ namespace CrossStitchCreator
                 float yScale = (float)pictureBoxResized.Image.Height / (float)mRecolouredImage.Height;
                 int x = (int)((float)e.X / xScale);
                 int y = (int)((float)e.Y / yScale);
-                if (mColourViewer == null || mColourViewer.Visible == false)
-                {
-                    showPalette(null, null);
-                }
                 if (x >= 0 && x < mRecolouredImage.Width && y >= 0 && y < mRecolouredImage.Height)
                 {
-                    Color c = mRecolouredImage.GetPixel(x, y);
-                    mColourViewer.SelectColour(c);
+                    if (e.Button == MouseButtons.Right)
+                    {
+                        if (mColourViewer == null || mColourViewer.Visible == false)
+                        {
+                            showPalette(null, null);
+                        }
+                        Color c = mRecolouredImage.GetPixel(x, y);
+                        mColourViewer.SelectColour(c);
+                        mPainting = true;
+                        suspendUndo = true;
+                        mPaintingColor = c;
+                        lastClickWasRight = true;
+                    }
+                    else if (e.Button == MouseButtons.Left)
+                    {
+                        lastClickWasRight = false;
+                        Console.WriteLine("Painting: " + mPaintingColor + "," + mRecolouredImage.GetPixel(x, y));
+                        if (mPainting && mRecolouredImage.GetPixel(x, y) != mPaintingColor)
+                        {
+                            mRecolouredImage.SetPixel(x, y, mPaintingColor);
+                            RedrawTab2Images();
+                        }
+                    }
+                    else
+                    {
+                        if (mPainting && !lastClickWasRight)
+                        {
+                            if (suspendUndo)
+                            {
+                                suspendUndo = false;
+                                mRecolouredImage = mRecolouredImage;
+                            }
+                        }
+                    }
                 }
+            }
+        }
+
+        private void StopPainting(object sender, EventArgs e)
+        {
+            mPainting = false;
+            if (suspendUndo)
+            {
+                suspendUndo = false;
+                mRecolouredImage = mRecolouredImage;
             }
         }
 
