@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Drawing.Drawing2D;
 using System.Windows.Media.Imaging; // PresentationCore.dll
+using AdriansLib;
 
 namespace CrossStitchCreator
 {
@@ -165,7 +166,7 @@ namespace CrossStitchCreator
             int toRemove = nColours - maxColours;
             if (toRemove > 0)
             {
-                AdriansLib.ProgressBarForm prog = new AdriansLib.ProgressBarForm("Reducing Colour Depth...",toRemove);
+                ProgressBarForm prog = new ProgressBarForm("Reducing Colour Depth...",toRemove);
                 prog.Show();
 
                 for (int i = 0; i < toRemove; i++)
