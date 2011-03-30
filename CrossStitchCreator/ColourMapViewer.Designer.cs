@@ -122,6 +122,7 @@
             this.Controls.Add(this.infoBox);
             this.Controls.Add(this.listView);
             this.Name = "ColourMapViewer";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Colour Map Viewer";
             this.contextMenu.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();

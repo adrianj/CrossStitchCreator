@@ -144,6 +144,7 @@
             this.Controls.Add(this.patternList);
             this.Controls.Add(this.pictureBox);
             this.Name = "PatternEditor";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "PatternEditor";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.colourBox)).EndInit();

@@ -67,7 +67,6 @@ namespace CrossStitchCreator
                 && InputImageSize.Width > 0 && InputImageSize.Height > 0)
             {
                 float ratio = (float)InputImageSize.Width / (float)InputImageSize.Height;
-                Console.WriteLine("Fix: " + ratio);
                 if (keepWidth)
                 {
                     mOutputSize.Height = (int)((float)mOutputSize.Width / ratio);

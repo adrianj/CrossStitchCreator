@@ -68,7 +68,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>DMCColours.resx</DependentUpon>
     </Compile>
-    <Compile Include="ImagingTools.cs" />
+    <Compile Include="ImagingTool.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>

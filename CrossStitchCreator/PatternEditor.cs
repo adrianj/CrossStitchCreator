@@ -117,6 +117,20 @@ namespace CrossStitchCreator
             AddPattern(c, b, key, frequency);
         }
 
+        public Dictionary<Color, Bitmap> GetPatterns()
+        {
+            Dictionary<Color, Bitmap> ret = new Dictionary<Color, Bitmap>();
+            foreach (ListViewItem lvi in patternList.Items)
+            {
+                if (!ret.ContainsKey(lvi.BackColor))
+                {
+                    int imageIndex = patternList.SmallImageList.Images.IndexOfKey(lvi.ImageKey);
+                    ret.Add(lvi.BackColor, (Bitmap)patternList.SmallImageList.Images[imageIndex]);
+                }
+            }
+            return ret;
+        }
+
         public Bitmap GetPattern(Color c)
         {
             foreach (ListViewItem lvi in patternList.Items)
@@ -158,7 +172,7 @@ namespace CrossStitchCreator
 
         private void setImage(Bitmap b)
         {
-            ImagingTools tool = new ImagingTools(b);
+            ImagingTool tool = new ImagingTool(b);
             tool.ResizeImage(pictureBox.Size);
             pictureBox.Image = tool.OutputImage;
         }

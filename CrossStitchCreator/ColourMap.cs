@@ -60,7 +60,6 @@ namespace CrossStitchCreator
             Colours = new Dictionary<Color, IColourInfo>();
             if (!createEmpty)
             {
-                Console.WriteLine("Constructing?");
                 int index = 0;
                 for (int r = 0; r < 256; r += 16)
                     for (int g = 0; g < 256; g += 16)
@@ -175,8 +174,6 @@ namespace CrossStitchCreator
 
         public void RemoveColour(Color c)
         {
-            if (c == Color.FromArgb(255, 255, 255, 255))
-                Console.WriteLine("Deleting white!");
             if (Colours.ContainsKey(c)) Colours.Remove(c);
         }
 

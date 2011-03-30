@@ -12,3 +12,4 @@ Todo:
 * Context menu for PatternEditor, eg, to swap patterns.
 * Save patterns to *something* for later printing, with info.
 * Improve colour editing (like MS Paint)
+* Investigate why PatternEditor.UpdateColourMap() is so slow - use progress bar?

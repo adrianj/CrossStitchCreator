@@ -39,15 +39,12 @@ namespace CrossStitchCreator
             }
             set
             {
-                Console.WriteLine("mRecolouredImageChange");
                 if (!suspendUndo)
                 {
                     for (int i = maxUndos - 1; i > 0; i--)
                     {
                         //undoMaps[i] = undoMaps[i - 1];
                         undoRecolours[i] = undoRecolours[i - 1];
-                        Console.Write("undo shifting: ");
-                        if (undoRecolours[i] != null) Console.WriteLine("" + undoRecolours[i].Tag);
                     }
                     if (recolouredImage != null)
                     {
@@ -57,22 +54,11 @@ namespace CrossStitchCreator
                     else undoRecolours[0] = null;
                 }
                 recolouredImage = value;
-                UpdateColourMap();
-                if (ColourMap != null) recolouredImage.Tag = ColourMap.Clone();
-                else recolouredImage.Tag = null;
-                for (int i = 0; i < maxUndos; i++)
+                if (recolouredImage != null)
                 {
-                    if (undoRecolours[i] != null)
-                    {
-                        Console.Write("Undo: " + i + ", " + undoRecolours[i].Tag);
-                        if (undoRecolours[i].Tag != null)
-                        {
-                            IColourMap cmap = (IColourMap)undoRecolours[i].Tag;
-                            Console.WriteLine(", " + cmap.Count);
-                        }
-                        else Console.WriteLine(", null");
-                    }
-                    else Console.Write("Undo: " + i + ", null, null");
+                    UpdateColourMap();
+                    if (ColourMap != null) recolouredImage.Tag = ColourMap.Clone();
+                    else recolouredImage.Tag = null;
                 }
             }
         }
@@ -231,13 +217,17 @@ namespace CrossStitchCreator
                     float maxDim = Math.Max(mInputImage.Width, mInputImage.Height);
                     float scale = maxDim / 1000;
                     Size newSize = new Size((int)((float)mInputImage.Width / scale),(int)((float) mInputImage.Height / scale));
-                    ImagingTools tool = new ImagingTools(mInputImage);
+                    ImagingTool tool = new ImagingTool(mInputImage);
                     tool.ResizeImage(newSize,InterpolationMode.Default);
                     mInputImage = tool.OutputImage;
                     
                 }
                 mSettings.InputImageSize = mInputImage.Size;
                 mSettings.FixSizeRatio = fixRatioCheck.Checked;
+                mResizedImage = null;
+                //mCroppedImage = null;
+                mRecolouredImage = null;
+                mPatternImage = null;
             }
             catch (ArgumentException e)
             {
@@ -246,6 +236,8 @@ namespace CrossStitchCreator
             }
             finally { this.Cursor = Cursors.Default; }
             RedrawTab1Images();
+            RedrawTab2Images();
+            RedrawTab3Images();
         }
 
 
@@ -291,11 +283,11 @@ namespace CrossStitchCreator
         {
             if (mInputImage == null) return;
             this.Cursor = Cursors.WaitCursor;
-            ImagingTools tool;
+            ImagingTool tool;
             if (mCroppedImage == null)
-                tool = new ImagingTools(mInputImage, ColourMap);
+                tool = new ImagingTool(mInputImage, ColourMap);
             else
-                tool = new ImagingTools(mCroppedImage, ColourMap);
+                tool = new ImagingTool(mCroppedImage, ColourMap);
             //mSettings.InputImageSize = mInputImage.Size;
             tool.ResizeImage(mSettings.OutputImageSize, (InterpolationMode)interpCombo.SelectedItem);
             mResizedImage = tool.OutputImage;
@@ -314,13 +306,21 @@ namespace CrossStitchCreator
             this.Cursor = Cursors.WaitCursor;
             if (mInputImage != null)
             {
-                ImagingTools tool1 = new ImagingTools(mInputImage);
+                ImagingTool tool1 = new ImagingTool(mInputImage);
                 pictureBoxOriginal.Image = tool1.FitToControl(pictureBoxOriginal);
+            }
+            else
+            {
+                pictureBoxOriginal.Image = null;
             }
             if (mResizedImage != null)
             {
-                ImagingTools tool2 = new ImagingTools(mResizedImage);
+                ImagingTool tool2 = new ImagingTool(mResizedImage);
                 pictureBoxResized.Image = tool2.FitToControl(pictureBoxOriginal);
+            }
+            else
+            {
+                pictureBoxResized.Image = null;
             }
 
             updateFormFromSettings();
@@ -375,7 +375,7 @@ namespace CrossStitchCreator
         void mColourViewer_ColourChangeEvent(object sender, ColourChangeEventArgs e)
         {
             if (mRecolouredImage == null) return;
-            ImagingTools tool = new ImagingTools(mRecolouredImage, ColourMap);
+            ImagingTool tool = new ImagingTool(mRecolouredImage, ColourMap);
             if (!e.DoReplace)
             {
                 tool.RemoveFromPalette(e.Colour);
@@ -394,9 +394,8 @@ namespace CrossStitchCreator
         {
             if (mRecolouredImage != null && ColourMap != null)
             {
-                ImagingTools tool = new ImagingTools(mRecolouredImage, ColourMap);
+                ImagingTool tool = new ImagingTool(mRecolouredImage, ColourMap);
                 tool.UpdateColourMapFromImage();
-                Console.WriteLine("Updating Colour Map: " + ColourMap.Count);
                 mSettings.MaxColours = ColourMap.Count;
                 updateFormFromSettings();
                 if (mColourViewer != null)
@@ -411,13 +410,21 @@ namespace CrossStitchCreator
             this.Cursor = Cursors.WaitCursor;
             if (mResizedImage != null)
             {
-                ImagingTools tool1 = new ImagingTools(mResizedImage);
+                ImagingTool tool1 = new ImagingTool(mResizedImage);
                 pictureBoxResized2.Image = tool1.FitToControl(pictureBoxOriginal);
+            }
+            else
+            {
+                pictureBoxResized2.Image = null;
             }
             if (mRecolouredImage != null)
             {
-                ImagingTools tool2 = new ImagingTools(mRecolouredImage);
+                ImagingTool tool2 = new ImagingTool(mRecolouredImage);
                 pictureBoxRecoloured.Image = tool2.FitToControl(pictureBoxOriginal);
+            }
+            else
+            {
+                pictureBoxRecoloured.Image = null;
             }
             updateFormFromSettings();
             this.Cursor = Cursors.Default;
@@ -439,18 +446,18 @@ namespace CrossStitchCreator
         public void RecolourImage(bool startAgain)
         {
             this.Cursor = Cursors.WaitCursor;
-            ImagingTools tool;
+            ImagingTool tool;
             if (mRecolouredImage == null || startAgain)
             {
                 CreateNewColourMap();
-                tool = new ImagingTools(mResizedImage, ColourMap);
+                tool = new ImagingTool(mResizedImage, ColourMap);
                 //tool.ReduceColourDepth();
                 tool.ReduceColourDepth(ColourMap);
                 mRecolouredImage = tool.OutputImage;
             }
             else
             {
-                tool = new ImagingTools(mRecolouredImage, ColourMap);
+                tool = new ImagingTool(mRecolouredImage, ColourMap);
                 tool.ReduceColourDepth((int)maxColoursUpDown.Value);
                 mRecolouredImage = tool.OutputImage;
             }
@@ -507,7 +514,6 @@ namespace CrossStitchCreator
                     else if (e.Button == MouseButtons.Left)
                     {
                         lastClickWasRight = false;
-                        Console.WriteLine("Painting: " + mPaintingColor + "," + mRecolouredImage.GetPixel(x, y));
                         if (mPainting && mRecolouredImage.GetPixel(x, y) != mPaintingColor)
                         {
                             mRecolouredImage.SetPixel(x, y, mPaintingColor);
@@ -570,10 +576,11 @@ namespace CrossStitchCreator
             if (mRecolouredImage != null)
             {
                 this.Cursor = Cursors.WaitCursor;
-                ImagingTools tool = new ImagingTools(mRecolouredImage);
+                ImagingTool tool = new ImagingTool(mRecolouredImage);
                 patternEditor.UpdateColourMap();
                 this.Cursor = Cursors.Default;
                 patternEditor.Show();
+                patternEditor.Focus();
             }
         }
 
@@ -582,13 +589,21 @@ namespace CrossStitchCreator
             this.Cursor = Cursors.WaitCursor;
             if (mRecolouredImage != null)
             {
-                ImagingTools tool1 = new ImagingTools(mRecolouredImage);
+                ImagingTool tool1 = new ImagingTool(mRecolouredImage);
                 pictureBoxRecoloured2.Image = tool1.FitToControl(pictureBoxRecoloured2);
+            }
+            else
+            {
+                pictureBoxRecoloured2.Image = null;
             }
             if (mPatternImage != null)
             {
-                ImagingTools tool2 = new ImagingTools(mPatternImage);
+                ImagingTool tool2 = new ImagingTool(mPatternImage);
                 pictureBoxPattern.Image = tool2.FitToControl(pictureBoxPattern);
+            }
+            else
+            {
+                pictureBoxPattern.Image = null;
             }
             updateFormFromSettings();
             this.Cursor = Cursors.Default;
@@ -597,7 +612,7 @@ namespace CrossStitchCreator
         {
             if (mRecolouredImage != null)
             {
-                ImagingTools tool3 = new ImagingTools(mRecolouredImage);
+                ImagingTool tool3 = new ImagingTool(mRecolouredImage);
                 tool3.ReplaceColoursWithPatterns(patternEditor);
                 mPatternImage = tool3.OutputImage;
                 pictureBoxPattern.Image = mPatternImage;
