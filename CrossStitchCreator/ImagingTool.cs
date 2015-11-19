@@ -6,7 +6,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Drawing.Drawing2D;
 using System.Windows.Media.Imaging; // PresentationCore.dll
-using AdriansLib;
+using DTALib;
 using System.ComponentModel;
 
 namespace CrossStitchCreator

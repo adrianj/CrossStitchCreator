@@ -15,14 +15,15 @@ namespace CrossStitchCreator
     {
 
         private int count = 0;
-        private IDictionaryEnumerator mIterator;
+        List<Image> patterns;
 
         public PatternCreator()
         {
             ResourceManager rm = Properties.Patterns.ResourceManager;
             ResourceSet rs = rm.GetResourceSet(new CultureInfo("en-US"), true, true);
-            
-            mIterator = rs.GetEnumerator();
+            patterns = new List<Image>();
+
+            IDictionaryEnumerator mIterator = rs.GetEnumerator();
             int count = 0;
             while(mIterator.MoveNext())
             {
@@ -31,35 +32,46 @@ namespace CrossStitchCreator
                 if (val is Image)
                 {
                     Image img = (Image)val;
+                    patterns.Add(img);
                 }
                 count++;
             }
-            mIterator = rs.GetEnumerator();
+            Reset();
         }
+
+        public void Reset() { count = 0; }
 
         public Bitmap GetNextPattern()
         {
             Bitmap b = new Bitmap(PatternEditor.PATTERN_WIDTH, PatternEditor.PATTERN_WIDTH,PixelFormat.Format16bppRgb555);
-            Graphics g = Graphics.FromImage(b);
-            g.FillRectangle(Brushes.White, 0, 0, b.Width, b.Height);
-            g.DrawRectangle(Pens.Gray, 0, 0, b.Width, b.Height);
-            
-            if (mIterator.MoveNext())
+            using (Graphics g = Graphics.FromImage(b))
             {
-                Bitmap bRes = (Bitmap)mIterator.Value;
-                g.DrawImage(bRes, 1, 1);
+                g.FillRectangle(Brushes.White, 0, 0, b.Width, b.Height);
+                g.DrawRectangle(Pens.Gray, 0, 0, b.Width, b.Height);
+
+                if(count == 0)
+                {
+                    // Do nothing, already have a filled white rectangle.
+                }
+                else if (count == 1)
+                {
+                    g.FillRectangle(Brushes.Black, 1, 1, b.Width-2, b.Height-2);
+                }
+                else if (count < patterns.Count + 2)
+                {
+                    Bitmap bRes = (Bitmap)patterns[count-2];
+                    g.DrawImage(bRes, 1, 1);
+                }
+                else if (count < patterns.Count + 54)
+                {
+                    int cnt = count - patterns.Count - 2;
+                    char c = (char)('A' + cnt);
+                    if (cnt >= 26)
+                        c = (char)('A' + cnt-26);
+                    g.DrawString("" + c, new Font("Courier", 9), new SolidBrush(Color.Black), new Point(0, 0));
+                }
             }
-            else if (count < 52)
-            {
-                char c = 'a';
-                if(count < 26)
-                    c = (char)('A' +count);
-                else
-                    c = (char)('a' + (count-26));
-                g.DrawString(""+c, new Font("Courier", 8), new SolidBrush(Color.Black), new Point(0, 0));
-                count++;
-            }
-            g.Dispose();
+            count++;
             return b;
         }
     }

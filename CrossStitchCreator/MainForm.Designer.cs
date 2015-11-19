@@ -73,7 +73,7 @@
             this.tabPagePattern = new System.Windows.Forms.TabPage();
             this.updateButton = new System.Windows.Forms.Button();
             this.editButton = new System.Windows.Forms.Button();
-            this.pictureBoxPattern = new AdriansLib.ZoomablePictureBox();
+            this.pictureBoxPattern = new DTALib.ZoomablePictureBox();
             this.pictureBoxRecoloured2 = new System.Windows.Forms.PictureBox();
             this.menuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxOriginal)).BeginInit();
@@ -167,6 +167,7 @@
             this.savePatternImageToolStripMenuItem.Name = "savePatternImageToolStripMenuItem";
             this.savePatternImageToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.savePatternImageToolStripMenuItem.Text = "Save Pattern Image...";
+            this.savePatternImageToolStripMenuItem.Click += new System.EventHandler(this.savePatternImageToolStripMenuItem_Click);
             // 
             // saveAsToolStripMenuItem
             // 
@@ -196,6 +197,7 @@
             this.savePatternImageAsToolStripMenuItem.Name = "savePatternImageAsToolStripMenuItem";
             this.savePatternImageAsToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
             this.savePatternImageAsToolStripMenuItem.Text = "Save Pattern Image As...";
+            this.savePatternImageAsToolStripMenuItem.Click += new System.EventHandler(this.savePatternImageAsToolStripMenuItem_Click);
             // 
             // undoToolStripMenuItem
             // 
@@ -615,7 +617,7 @@
         private System.Windows.Forms.TabPage tabPageResize;
         private System.Windows.Forms.TabPage tabPagePattern;
         private System.Windows.Forms.PictureBox pictureBoxRecoloured2;
-        private AdriansLib.ZoomablePictureBox pictureBoxPattern;
+        private DTALib.ZoomablePictureBox pictureBoxPattern;
         
         private System.Windows.Forms.Button editButton;
         private System.Windows.Forms.ToolStripMenuItem saveProjectToolStripMenuItem;

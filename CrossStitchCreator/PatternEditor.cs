@@ -13,7 +13,7 @@ namespace CrossStitchCreator
 {
     public partial class PatternEditor : Form
     {
-        public const int PATTERN_WIDTH = 14 + 2;   // Nominal size of the icon resources + 1 each side for border
+        public const int PATTERN_WIDTH = 12 + 2;   // Nominal size of the icon resources + 1 each side for border
 
         private int drawing = 0;
         private Bitmap mCurrentImage = new Bitmap(PATTERN_WIDTH, PATTERN_WIDTH, PixelFormat.Format16bppRgb555);

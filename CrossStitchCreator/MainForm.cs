@@ -140,6 +140,9 @@ namespace CrossStitchCreator
         #endregion
 
         #region Main Menu Stuff
+
+        string imageFileFilter = "PNG (*.png)|*.png|24bit Bitmap (*.bmp)|*.bmp|JPEG (*.jpeg)|*.jpeg|TIFF (*.tiff)|*.tiff,*.tif|Gif (*.gif)|*.gif|All Files (*.*)|*.*";
+
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             aboutBox.ShowDialog();
@@ -152,8 +155,7 @@ namespace CrossStitchCreator
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string filter = "Image Files|*.jpg;*.jpeg;*.bmp;*.tif;*.tiff;*.png|All Files|*.*";
-            openFileDialog.Filter = filter;
+            openFileDialog.Filter = imageFileFilter;
             openFileDialog.Title = "Open Image File...";
             openFileDialog.Multiselect = false;
             openFileDialog.ShowDialog();
@@ -176,20 +178,31 @@ namespace CrossStitchCreator
         private void saveOutputImageAs(object sender, EventArgs e)
         {
             if (mPatternImage == null) return;
-            string filter = "24bit Bitmap (*.bmp)|*.bmp|JPEG (*.jpeg)|*.jpeg|TIFF (*.tiff)|*.tiff,*.tif|Gif (*.gif)|*.gif";
-            saveFileDialog.Filter = filter;
-            saveFileDialog.ShowDialog();
+
+            saveFileDialog.Filter = imageFileFilter;
+            if(saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                mSettings.OutputImagePath = saveFileDialog.FileName;
+                SaveOutputImage();
+            }
+            
+        }
+
+        private void SaveOutputImage()
+        {
             string extension = Path.GetExtension(saveFileDialog.FileName).Substring(1);
             try
             {
-                if(extension.Equals("bmp"))
+                if (extension.Equals("bmp"))
                     mPatternImage.Save(saveFileDialog.FileName, ImageFormat.Bmp);
-                else if(extension.Equals("gif"))
+                else if (extension.Equals("gif"))
                     mPatternImage.Save(saveFileDialog.FileName, ImageFormat.Gif);
                 else if (extension.Equals("tiff") || extension.Equals("tif"))
                     mPatternImage.Save(saveFileDialog.FileName, ImageFormat.Tiff);
                 else if (extension.Equals("jpeg") || extension.Equals("jpg"))
                     mPatternImage.Save(saveFileDialog.FileName, ImageFormat.Jpeg);
+                else if (extension.Equals("png"))
+                    mPatternImage.Save(saveFileDialog.FileName, ImageFormat.Png);
                 else
                 {
                     MessageBox.Show("No Codec to save to this format");
@@ -200,7 +213,17 @@ namespace CrossStitchCreator
             {
                 MessageBox.Show("Saving Image Failed: " + ioe);
             }
-            
+        }
+
+
+        private void savePatternImageAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void savePatternImageToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
 
         public void LoadImage()
@@ -625,6 +648,8 @@ namespace CrossStitchCreator
             RedrawPattern();
         }
         #endregion
+
+
 
 
 
