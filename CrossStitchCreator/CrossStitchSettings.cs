@@ -18,6 +18,8 @@ namespace CrossStitchCreator
         public string ProjectPath { get; set; }
         public string InputImagePath { get; set; }
         public string OutputImagePath { get; set; }
+        public string PatternLegendPath { get; set; }
+        public string PatternImagePath { get; set; }
         private bool mFixRatio = false;
         public bool FixSizeRatio { get { return mFixRatio; } set { mFixRatio = value; DoRatioFixing(true); } }
         public Size InputImageSize { get; set; }

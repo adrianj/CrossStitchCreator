@@ -90,6 +90,7 @@ namespace CrossStitchCreator
             return s+Environment.NewLine+"DMC: "+DMCNumber+", Anchor: "+AnchorNumber;
         }
 
+
         public override IColourInfo Clone()
         {
             return new DMCColour(this);

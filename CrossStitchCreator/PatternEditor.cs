@@ -22,6 +22,8 @@ namespace CrossStitchCreator
 
         private PatternCreator patternCreator = null;
 
+        public ListView ColourList { get { return this.patternList; } }
+
 
         
         /// <summary>
@@ -51,7 +53,7 @@ namespace CrossStitchCreator
                         maxC = col;
                     }
                 }
-                AddPattern(maxC.Colour, max);
+                AddPattern(maxC);
                 temp.Remove(maxC);
             }
             patternList.Sort();
@@ -74,26 +76,22 @@ namespace CrossStitchCreator
             }
         }
 
-        public void AddPattern(Color c, int frequency)
+        public void AddPattern(IColourInfo c)
         {
+            
             // find out if Color already exists in list.
             foreach (ListViewItem lvi in patternList.Items)
             {
-                if (lvi.BackColor == c)
+                if (lvi.BackColor == c.Colour)
                 {
-                    lvi.Tag = frequency;
+                    lvi.Tag = c.Frequency;
                     return;
                 }
             }
             // Colour wasn't in list. Add a new one.
-            AddPattern(c, CreateNewPattern(),frequency);
+            AddPattern(c, CreateNewPattern());
         }
-        public void AddPattern(Color c) { AddPattern(c, CreateNewPattern()); }
-        public void AddPattern(Color c, Bitmap b)
-        {
-            AddPattern(c, b, 0);
-        }
-        public void AddPattern(Color c, Bitmap b, int frequency)
+        public void AddPattern(IColourInfo c, Bitmap b)
         {
             // find an index i that is unique in patternList.
             int i = 0;
@@ -106,6 +104,7 @@ namespace CrossStitchCreator
                 {
                     key = ("" + i).PadLeft(4, '0');
                     string imageKey = lvi.ImageKey;
+                    
                     if (key.Equals(imageKey))
                     {
                         keyFree = false;
@@ -114,7 +113,7 @@ namespace CrossStitchCreator
                 }
                 i++;
             }
-            AddPattern(c, b, key, frequency);
+            AddPattern(c, b, key);
         }
 
         public Dictionary<Color, Bitmap> GetPatterns()
@@ -144,17 +143,28 @@ namespace CrossStitchCreator
             return null;
         }
 
-        public void AddPattern(Color c, Bitmap bm, string imageKey, int frequency)
+        public void AddPattern(IColourInfo c, Bitmap bm, string imageKey)
         {
             ListViewItem lvi = new ListViewItem("    ",imageKey);
             patternList.SmallImageList.Images.Add(imageKey,bm);
-            string r = String.Format("{0:X}", c.R);
-            string g = String.Format("{0:X}", c.G);
-            string b = String.Format("{0:X}", c.B);
+            Color col = c.Colour;
+            string r = String.Format("{0:X}", col.R);
+            string g = String.Format("{0:X}", col.G);
+            string b = String.Format("{0:X}", col.B);
             lvi.ToolTipText = String.Format("Colour: 0x" + r.PadLeft(2, '0') + g.PadLeft(2, '0') + b.PadLeft(2, '0')+
-                ", frequency: "+frequency+", imageKey: "+lvi.ImageKey);
-            lvi.BackColor = c;
-            lvi.Tag = frequency;
+                ", frequency: "+c.Frequency+", imageKey: "+lvi.ImageKey);
+            lvi.BackColor = col;
+            
+            lvi.Tag = c.Frequency;
+            lvi.SubItems.Add(c.Name);
+            lvi.SubItems.Add(""+c.Frequency);
+            if(c is DMCColour)
+            {
+                lvi.SubItems.Add("DMC: "+(c as DMCColour).DMCNumber);
+            }
+            
+            lvi.UseItemStyleForSubItems = false;
+            
             patternList.Items.Add(lvi);
         }
 
@@ -166,7 +176,7 @@ namespace CrossStitchCreator
         private void addButton_Click(object sender, EventArgs e)
         {
             byte b = (byte)(patternList.Items.Count * 30);
-            AddPattern(Color.FromArgb(255, b, b, b));
+            //AddPattern(Color.FromArgb(255, b, b, b));
             patternList.Items[patternList.Items.Count - 1].Selected = true;
         }
 
@@ -187,9 +197,10 @@ namespace CrossStitchCreator
             setImage((Bitmap)img);
             if (colourBox.Image == null) colourBox.Image = new Bitmap(colourBox.Width, colourBox.Height,PixelFormat.Format16bppRgb555);
             Bitmap b = (Bitmap)colourBox.Image;
-            Graphics g = Graphics.FromImage(b);
-            g.FillRectangle(new SolidBrush(lvi.BackColor), 0, 0, b.Width,b.Height);
-            g.Dispose();
+            using (Graphics g = Graphics.FromImage(b))
+            {
+                g.FillRectangle(new SolidBrush(lvi.BackColor), 0, 0, 100, 100);
+            }
             Refresh();
         }
 

@@ -67,7 +67,7 @@ namespace CrossStitchCreator
         public IColourMap ColourMap {get;set;}
         private ColourMapViewer mColourViewer;
 
-        public const int MAX_COLOURS = 500;
+        public const int MAX_COLOURS = 100;
 
         public MainForm()
         {
@@ -105,7 +105,6 @@ namespace CrossStitchCreator
                 SimpleColour s = new SimpleColour("Black", ColourMap.Colours.Count, Black);
                 ColourMap.Colours[Black] = s;
             }
-            ColourMap.Colours[White].IsChecked = true;
             ColourMap.Colours[White].IsChecked = true;
             ColourMap.Colours[Black].IsChecked = true;
         }
@@ -167,42 +166,29 @@ namespace CrossStitchCreator
             LoadImage();
         }
 
-        private void saveOutputImage(object sender, EventArgs e)
-        {
-            if (mSettings.OutputImagePath == null)
-            {
-                saveOutputImageAs(sender, e);
-            }
-        }
 
-        private void saveOutputImageAs(object sender, EventArgs e)
+        private void savePatternImageAs(object sender, EventArgs e)
         {
             if (mPatternImage == null) return;
 
             saveFileDialog.Filter = imageFileFilter;
+            saveFileDialog.FileName = mSettings.PatternImagePath;
             if(saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                mSettings.OutputImagePath = saveFileDialog.FileName;
-                SaveOutputImage();
+                mSettings.PatternImagePath = saveFileDialog.FileName;
+                SaveImage(mPatternImage, mSettings.PatternImagePath);
             }
             
         }
 
-        private void SaveOutputImage()
+
+        private void SaveImage(Bitmap bmp, string path)
         {
-            string extension = Path.GetExtension(saveFileDialog.FileName).Substring(1);
             try
             {
-                if (extension.Equals("bmp"))
-                    mPatternImage.Save(saveFileDialog.FileName, ImageFormat.Bmp);
-                else if (extension.Equals("gif"))
-                    mPatternImage.Save(saveFileDialog.FileName, ImageFormat.Gif);
-                else if (extension.Equals("tiff") || extension.Equals("tif"))
-                    mPatternImage.Save(saveFileDialog.FileName, ImageFormat.Tiff);
-                else if (extension.Equals("jpeg") || extension.Equals("jpg"))
-                    mPatternImage.Save(saveFileDialog.FileName, ImageFormat.Jpeg);
-                else if (extension.Equals("png"))
-                    mPatternImage.Save(saveFileDialog.FileName, ImageFormat.Png);
+                ImageFormat format = GetImageFormatFromExtension(path);
+                if (format != ImageFormat.MemoryBmp)
+                    bmp.Save(path, format);
                 else
                 {
                     MessageBox.Show("No Codec to save to this format");
@@ -215,15 +201,60 @@ namespace CrossStitchCreator
             }
         }
 
-
-        private void savePatternImageAsToolStripMenuItem_Click(object sender, EventArgs e)
+        private static ImageFormat GetImageFormatFromExtension(string path)
         {
+            string extension = Path.GetExtension(path).Substring(1);
+            ImageFormat format = ImageFormat.MemoryBmp;
 
+            if (extension.Equals("bmp"))
+                format = ImageFormat.Bmp;
+            else if (extension.Equals("gif"))
+                format = ImageFormat.Gif;
+            else if (extension.Equals("tiff") || extension.Equals("tif"))
+                format = ImageFormat.Tiff;
+            else if (extension.Equals("jpeg") || extension.Equals("jpg"))
+                format = ImageFormat.Jpeg;
+            else if (extension.Equals("png"))
+                format = ImageFormat.Png;
+            return format;
         }
 
-        private void savePatternImageToolStripMenuItem_Click(object sender, EventArgs e)
-        {
 
+        private void savePatternLegendAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            saveFileDialog.Filter = imageFileFilter;
+            saveFileDialog.FileName = mSettings.PatternLegendPath;
+            if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                mSettings.PatternLegendPath = saveFileDialog.FileName;
+                SavePatternLegend();
+            }
+        }
+
+
+        private void SavePatternLegend()
+        {
+            Control con = this.patternEditor.ColourList;
+            Size oldSize = con.Size;
+            if(oldSize.Width < 400 || oldSize.Height < 600)
+                con.Size = new System.Drawing.Size(400, 600);
+            Bitmap bmp = new Bitmap(con.Width, con.Height);
+            con.DrawToBitmap(bmp, new Rectangle(0, 0, con.Width, con.Height));
+            SaveImage(bmp, mSettings.PatternLegendPath);
+            con.Size = oldSize;
+        }
+
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (mRecolouredImage == null) return;
+
+            saveFileDialog.Filter = imageFileFilter;
+            saveFileDialog.FileName = mSettings.OutputImagePath;
+            if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                mSettings.OutputImagePath = saveFileDialog.FileName;
+                SaveImage(mRecolouredImage, mSettings.OutputImagePath);
+            }
         }
 
         public void LoadImage()
@@ -648,6 +679,7 @@ namespace CrossStitchCreator
             RedrawPattern();
         }
         #endregion
+
 
 
 

@@ -30,12 +30,16 @@
         {
             this.pictureBox = new System.Windows.Forms.PictureBox();
             this.patternList = new System.Windows.Forms.ListView();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.addButton = new System.Windows.Forms.Button();
             this.updateButton = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.colourBox = new System.Windows.Forms.PictureBox();
             this.sortingCombo = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
+            this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.colourBox)).BeginInit();
             this.SuspendLayout();
@@ -56,20 +60,40 @@
             // 
             // patternList
             // 
-            this.patternList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.patternList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.patternList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1,
+            this.columnHeader2,
+            this.columnHeader3,
+            this.columnHeader4});
             this.patternList.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.patternList.GridLines = true;
             this.patternList.Location = new System.Drawing.Point(12, 277);
             this.patternList.MultiSelect = false;
             this.patternList.Name = "patternList";
             this.patternList.ShowItemToolTips = true;
-            this.patternList.Size = new System.Drawing.Size(316, 127);
+            this.patternList.Size = new System.Drawing.Size(446, 262);
             this.patternList.TabIndex = 1;
             this.patternList.UseCompatibleStateImageBehavior = false;
-            this.patternList.View = System.Windows.Forms.View.SmallIcon;
+            this.patternList.View = System.Windows.Forms.View.Details;
             this.patternList.SelectedIndexChanged += new System.EventHandler(this.patternList_SelectedIndexChanged);
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "Colour";
+            this.columnHeader1.Width = 74;
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "Name";
+            this.columnHeader2.Width = 155;
+            // 
+            // columnHeader3
+            // 
+            this.columnHeader3.Text = "Frequency";
+            this.columnHeader3.Width = 98;
             // 
             // addButton
             // 
@@ -112,9 +136,8 @@
             // 
             // sortingCombo
             // 
-            this.sortingCombo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.sortingCombo.FormattingEnabled = true;
-            this.sortingCombo.Location = new System.Drawing.Point(253, 255);
+            this.sortingCombo.Location = new System.Drawing.Point(258, 255);
             this.sortingCombo.Name = "sortingCombo";
             this.sortingCombo.Size = new System.Drawing.Size(75, 21);
             this.sortingCombo.TabIndex = 6;
@@ -122,19 +145,23 @@
             // 
             // label2
             // 
-            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(207, 258);
+            this.label2.Location = new System.Drawing.Point(212, 258);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(40, 13);
             this.label2.TabIndex = 7;
             this.label2.Text = "Sorting";
             // 
+            // columnHeader4
+            // 
+            this.columnHeader4.Text = "Note";
+            this.columnHeader4.Width = 133;
+            // 
             // PatternEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(340, 416);
+            this.ClientSize = new System.Drawing.Size(470, 551);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.sortingCombo);
             this.Controls.Add(this.colourBox);
@@ -163,5 +190,9 @@
         private System.Windows.Forms.PictureBox colourBox;
         private System.Windows.Forms.ComboBox sortingCombo;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.ColumnHeader columnHeader1;
+        private System.Windows.Forms.ColumnHeader columnHeader2;
+        private System.Windows.Forms.ColumnHeader columnHeader3;
+        private System.Windows.Forms.ColumnHeader columnHeader4;
     }
 }
