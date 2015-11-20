@@ -237,7 +237,7 @@ namespace CrossStitchCreator
             Control con = this.patternEditor.ColourList;
             Size oldSize = con.Size;
             if(oldSize.Width < 400 || oldSize.Height < 600)
-                con.Size = new System.Drawing.Size(400, 600);
+                con.Size = new System.Drawing.Size(500, 750);
             Bitmap bmp = new Bitmap(con.Width, con.Height);
             con.DrawToBitmap(bmp, new Rectangle(0, 0, con.Width, con.Height));
             SaveImage(bmp, mSettings.PatternLegendPath);

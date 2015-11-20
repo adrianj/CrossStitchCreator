@@ -279,6 +279,10 @@ namespace CrossStitchCreator
                     Color c = orig.GetPixel(x, y);
                     Bitmap i = mPatterns[c];
                     g.DrawImage(i, x * pScale, y * pScale);
+                    if (x % 5 == 0)
+                        g.DrawLine(Pens.Gray, x * pScale - 1, y * pScale - 1, (x) * pScale - 1, (y + 1) * pScale - 1);
+                    if (y % 5 == 0)
+                        g.DrawLine(Pens.Gray, x * pScale - 1, y * pScale - 1, (x + 1) * pScale - 1, (y) * pScale - 1);
                     w.ReportProgress((co++) * 100 / (b.Width * b.Height));
                 }
             g.Dispose();
