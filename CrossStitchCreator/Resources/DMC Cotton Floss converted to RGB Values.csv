@@ -29,7 +29,7 @@ Floss#,Description,Red,Green,Blue,RGB code,Row
 818,Baby Pink,255,223,217,FFDFD9,row 02-05
 957,Geranium Pale,253,181,181,FDB5B5,row 02-06
 956,Geranium,255,145,145,FF9191,row 02-07
-309,Rose Dark,86,74,74,BA4A4A,row 02-08
+309,Rose Dark,186,74,74,BA4A4A,row 02-08
 963,Dusty Rose Ult Vy Lt,255,215,215,FFD7D7,row 02-09
 3716,Dusty Rose Med Vy Lt,255,189,189,FFBDBD,row 02-10
 962,Dusty Rose Medium,230,138,138,E68A8A,row 02-11
@@ -76,7 +76,7 @@ Floss#,Description,Red,Green,Blue,RGB code,Row
 223,Shell Pink Light,204,132,124,CC847C,row 04-04
 3722,Shell Pink Med,188,108,100,BC6C64,row 04-05
 3721,Shell Pink Dark,161,75,81,A14B51,row 04-06
-221,Shell Pink Vy Dk,136,62,67,8.83E+45,row 04-07
+221,Shell Pink Vy Dk,136,62,67,883E43,row 04-07
 778,Antique Mauve Vy Lt,223,179,187,DFB3BB,row 04-08
 3727,Antique Mauve Light,219,169,178,DBA9B2,row 04-09
 316,Antique Mauve Med,183,115,127,B7737F,row 04-10
@@ -219,7 +219,7 @@ Floss#,Description,Red,Green,Blue,RGB code,Row
 913,Nile Green Med,109,171,119,6DAB77,row 10-03
 912,Emerald Green Lt,27,157,107,1B9D6B,row 10-04
 911,Emerald Green Med,24,144,101,189065,row 10-05
-910,Emerald Green Dark,24,126,86,1.87E+58,row 10-06
+910,Emerald Green Dark,24,126,86,187E56,row 10-06
 909,Emerald Green Vy Dk,21,111,73,156F49,row 10-07
 3818,Emerald Grn Ult V Dk,17,90,59,115A3B,row 10-08
 369,Pistachio Green Vy Lt,215,237,204,D7EDCC,row 10-09
@@ -302,7 +302,7 @@ Floss#,Description,Red,Green,Blue,RGB code,Row
 422,Hazelnut Brown Lt,198,159,123,C69F7B,row 13-11
 3828,Hazelnut Brown,183,139,97,B78B61,row 13-12
 420,Hazelnut Brown Dk,160,112,66,A07042,row 13-13
-869,Hazelnut Brown V Dk,131,94,57,8.35E+41,row 13-14
+869,Hazelnut Brown V Dk,131,94,57,835E39,row 13-14
 728,Topaz,228,180,104,E4B468,row 13-15
 783,Topaz Medium,206,145,36,CE9124,row 13-16
 782,Topaz Dark,174,119,32,AE7720,row 13-17
@@ -401,7 +401,7 @@ Floss#,Description,Red,Green,Blue,RGB code,Row
 437,Tan Light,228,187,142,E4BB8E,row 17-10
 436,Tan,203,144,81,CB9051,row 17-11
 435,Brown Very Light,184,119,72,B87748,row 17-12
-434,Brown Light,152,94,51,9.85E+35,row 17-13
+434,Brown Light,152,94,51,985E33,row 17-13
 433,Brown Med,122,69,31,7A451F,row 17-14
 801,Coffee Brown Dk,101,57,25,653919,row 17-15
 898,Coffee Brown Vy Dk,73,42,19,492A13,row 17-16
